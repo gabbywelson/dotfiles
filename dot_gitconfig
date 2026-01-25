@@ -1,0 +1,140 @@
+# ~/.gitconfig
+# Sensible Git defaults for modern development
+#
+# Note: Set your name and email with:
+#   git config --global user.name "Your Name"
+#   git config --global user.email "your@email.com"
+
+[init]
+    defaultBranch = main
+
+[core]
+    editor = cursor --wait
+    pager = delta
+    autocrlf = input
+    ignorecase = false
+    # Speed up git status in large repos
+    untrackedCache = true
+    fsmonitor = true
+
+[pull]
+    rebase = true
+
+[push]
+    autoSetupRemote = true
+    default = current
+
+[fetch]
+    prune = true
+    pruneTags = true
+
+[merge]
+    conflictstyle = zdiff3
+
+[rebase]
+    autoStash = true
+    autoSquash = true
+
+[diff]
+    colorMoved = default
+    algorithm = histogram
+
+[rerere]
+    enabled = true
+
+# ============================================
+# Delta (Beautiful Diffs)
+# ============================================
+
+[interactive]
+    diffFilter = delta --color-only
+
+[delta]
+    navigate = true
+    light = false
+    side-by-side = true
+    line-numbers = true
+    syntax-theme = Catppuccin Mocha
+
+[delta "decorations"]
+    commit-decoration-style = bold yellow box ul
+    file-style = bold yellow ul
+    file-decoration-style = none
+    hunk-header-decoration-style = cyan box ul
+
+# ============================================
+# Aliases
+# ============================================
+
+[alias]
+    # Status & Info
+    st = status -sb
+    last = log -1 HEAD --stat
+    who = shortlog -sn --no-merges
+
+    # Branching
+    co = checkout
+    cob = checkout -b
+    br = branch
+    bra = branch -a
+
+    # Committing
+    cm = commit -m
+    ca = commit --amend
+    can = commit --amend --no-edit
+
+    # Staging
+    aa = add --all
+    ap = add --patch
+
+    # Logging (pretty!)
+    lg = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit
+    ll = log --oneline -20
+    today = log --since=midnight --oneline --no-merges
+
+    # Diff
+    df = diff
+    dfs = diff --staged
+
+    # Stash
+    sl = stash list
+    sp = stash pop
+    ss = stash push -m
+
+    # Undo / Reset
+    unstage = reset HEAD --
+    undo = reset --soft HEAD~1
+    discard = checkout --
+
+    # Cleanup merged branches
+    cleanup = "!git branch --merged | grep -v '\\*\\|main\\|master\\|develop' | xargs -n 1 git branch -d"
+
+    # Show all aliases
+    aliases = config --get-regexp alias
+
+# ============================================
+# URL Shortcuts
+# ============================================
+
+[url "git@github.com:"]
+    insteadOf = gh:
+
+[url "git@gitlab.com:"]
+    insteadOf = gl:
+
+# ============================================
+# Colors
+# ============================================
+
+[color]
+    ui = auto
+
+[color "branch"]
+    current = yellow reverse
+    local = yellow
+    remote = green
+
+[color "status"]
+    added = green
+    changed = yellow
+    untracked = red

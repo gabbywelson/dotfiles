@@ -1,0 +1,84 @@
+# ~/.config/ghostty/config
+# Aesthetic terminal with Catppuccin Mocha theme
+#
+# Docs: https://ghostty.org/docs/config
+
+# ============================================
+# Font
+# ============================================
+
+# Primary font (Nerd Font for icons)
+font-family = MesloLGS Nerd Font
+font-size = 14
+
+# ============================================
+# Theme
+# ============================================
+
+# Catppuccin Mocha (built into Ghostty!)
+theme = catppuccin-mocha
+
+# ============================================
+# Window
+# ============================================
+
+# Comfortable padding
+window-padding-x = 12
+window-padding-y = 10
+
+# Initial size (columns x rows)
+window-width = 120
+window-height = 35
+
+# Remember window position/size
+window-save-state = always
+
+# Title
+window-title-font-family = MesloLGS Nerd Font
+
+# ============================================
+# Appearance
+# ============================================
+
+# Slight transparency for aesthetic (1.0 = fully opaque)
+background-opacity = 0.96
+
+# Blur background when transparent (macOS)
+background-blur-radius = 20
+
+# Cursor
+cursor-style = bar
+cursor-style-blink = true
+
+# ============================================
+# Behavior
+# ============================================
+
+# Clipboard
+clipboard-read = allow
+clipboard-write = allow
+copy-on-select = true
+
+# Mouse
+mouse-hide-while-typing = true
+
+# Shell integration
+shell-integration = zsh
+shell-integration-features = cursor,sudo,title
+
+# Confirm before closing with running processes
+confirm-close-surface = true
+
+# ============================================
+# Performance
+# ============================================
+
+# VSync for smooth rendering
+window-vsync = true
+
+# ============================================
+# Keybindings
+# ============================================
+
+# Ghostty has great defaults, minimal customization needed
+# See: ghostty +show-keys for current bindings

@@ -1,0 +1,131 @@
+# ~/.zsh_aliases - All shell aliases in one place
+# Managed by chezmoi. Edit at: ~/dotfiles/dot_zsh_aliases
+
+# ============================================
+# General
+# ============================================
+alias cl='clear'
+alias c='clear'
+alias q='exit'
+alias reload='source ~/.zshrc && echo "Reloaded ~/.zshrc"'
+
+# ============================================
+# Navigation
+# ============================================
+alias ..='cd ..'
+alias ...='cd ../..'
+alias ....='cd ../../..'
+alias ~='cd ~'
+alias -- -='cd -'  # Go back to previous directory
+
+# ============================================
+# File Listing (eza)
+# ============================================
+alias ls='eza --icons --group-directories-first'
+alias ll='eza -la --icons --group-directories-first --git'
+alias la='eza -a --icons --group-directories-first'
+alias lt='eza --tree --level=2 --icons'
+alias lta='eza --tree --level=2 --icons -a'
+alias tree='eza --tree --icons'
+
+# ============================================
+# File Operations (safer defaults)
+# ============================================
+alias rm='rm -i'
+alias cp='cp -i'
+alias mv='mv -i'
+alias mkdir='mkdir -pv'
+
+# ============================================
+# File Viewing (bat)
+# ============================================
+alias cat='bat --paging=never'
+alias catp='bat'  # with pager
+alias less='bat'
+
+# ============================================
+# Search (ripgrep, fd)
+# ============================================
+alias grep='rg'
+alias find='fd'
+
+# ============================================
+# Git
+# ============================================
+alias g='git'
+alias gs='git status'
+alias ga='git add'
+alias gaa='git add --all'
+alias gc='git commit'
+alias gcm='git commit -m'
+alias gp='git push'
+alias gl='git pull'
+alias gd='git diff'
+alias gds='git diff --staged'
+alias gco='git checkout'
+alias gcb='git checkout -b'
+alias gb='git branch'
+alias gba='git branch -a'
+alias glog='git log --oneline --graph --decorate -15'
+alias gloga='git log --oneline --graph --decorate --all'
+alias gst='git stash'
+alias gstp='git stash pop'
+alias lg='lazygit'
+
+# ============================================
+# npm / pnpm / yarn
+# ============================================
+alias ni='npm install'
+alias nr='npm run'
+alias nrd='npm run dev'
+alias nrb='npm run build'
+alias nrt='npm run test'
+
+alias pi='pnpm install'
+alias pr='pnpm run'
+alias prd='pnpm run dev'
+alias prb='pnpm run build'
+alias prt='pnpm run test'
+alias px='pnpm dlx'  # like npx
+
+# ============================================
+# Chezmoi (dotfiles)
+# ============================================
+alias cz='chezmoi'
+alias cze='chezmoi edit'
+alias cza='chezmoi apply'
+alias czd='chezmoi diff'
+alias czu='chezmoi update'
+
+# ============================================
+# Quick Config Edits
+# ============================================
+alias zshrc='cursor ~/.zshrc'
+alias aliases='cursor ~/.zsh_aliases'
+alias gitconfig='cursor ~/.gitconfig'
+
+# ============================================
+# Misc Utilities
+# ============================================
+alias h='history'
+alias j='jobs -l'
+alias path='echo -e ${PATH//:/\\n}'  # Print PATH, one entry per line
+alias now='date +"%Y-%m-%d %H:%M:%S"'
+alias week='date +%V'  # Week number
+alias ip='curl -s ifconfig.me'  # Public IP
+alias localip="ipconfig getifaddr en0"  # Local IP
+
+# ============================================
+# macOS Specific
+# ============================================
+alias o='open'
+alias oo='open .'  # Open current dir in Finder
+alias hidefiles='defaults write com.apple.finder AppleShowAllFiles -bool false && killall Finder'
+alias showfiles='defaults write com.apple.finder AppleShowAllFiles -bool true && killall Finder'
+
+# ============================================
+# Directory Shortcuts (customize these!)
+# ============================================
+# alias code='cd ~/code'
+# alias projects='cd ~/projects'
+# alias dl='cd ~/Downloads'

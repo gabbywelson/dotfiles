@@ -1,0 +1,18 @@
+# ~/.zsh_plugins.txt - Antidote plugin list
+# Keep this minimal for fast startup!
+#
+# After editing, reload your shell: source ~/.zshrc
+# Antidote will automatically regenerate the static plugin file
+
+# Syntax highlighting - colors for commands as you type
+# (must be near end of plugins list)
+zsh-users/zsh-syntax-highlighting
+
+# Autosuggestions - fish-like suggestions based on history
+zsh-users/zsh-autosuggestions
+
+# Additional completions for common tools
+zsh-users/zsh-completions kind:fpath
+
+# History substring search - type partial command, press up/down
+zsh-users/zsh-history-substring-search

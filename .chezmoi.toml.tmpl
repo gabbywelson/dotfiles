@@ -1,0 +1,10 @@
+# .chezmoi.toml.tmpl - Machine-specific configuration
+# This file is processed when you run `chezmoi init`
+# Values are prompted and stored in ~/.config/chezmoi/chezmoi.toml
+
+[edit]
+    command = "cursor"
+    args = ["--wait"]
+
+[diff]
+    pager = "delta"
