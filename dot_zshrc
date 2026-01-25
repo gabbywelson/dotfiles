@@ -62,8 +62,14 @@ eval "$(fnm env --use-on-cd)"
 # zoxide - smarter cd
 eval "$(zoxide init zsh)"
 
-# fzf - fuzzy finder (Ctrl+R for history, Ctrl+T for files)
+# fzf - fuzzy finder (Ctrl+T for files, Ctrl+R overridden by atuin)
 source <(fzf --zsh)
+
+# atuin - magical shell history (replaces Ctrl+R with better search)
+eval "$(atuin init zsh)"
+
+# thefuck - corrects your previous command (type 'fuck' after a typo)
+eval $(thefuck --alias)
 
 # ============================================
 # SECTION 6: Starship Prompt
@@ -104,9 +110,12 @@ export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 # SECTION 9: History Settings
 # ============================================
 
+# Note: Atuin provides enhanced history with sync, search, and stats
+# These settings are kept as fallback and for zsh compatibility
+
 HISTFILE=~/.zsh_history
-HISTSIZE=10000
-SAVEHIST=10000
+HISTSIZE=50000
+SAVEHIST=50000
 
 setopt HIST_IGNORE_DUPS       # No consecutive duplicates
 setopt HIST_IGNORE_ALL_DUPS   # Remove older duplicate

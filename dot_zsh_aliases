@@ -8,6 +8,7 @@ alias cl='clear'
 alias c='clear'
 alias q='exit'
 alias reload='source ~/.zshrc && echo "Reloaded ~/.zshrc"'
+alias dotfiles='cursor ~/dotfiles'  # Open dotfiles repo in editor
 
 # ============================================
 # Navigation
@@ -98,11 +99,11 @@ alias czd='chezmoi diff'
 alias czu='chezmoi update'
 
 # ============================================
-# Quick Config Edits
+# Quick Config Edits (uses chezmoi to edit source + auto-apply)
 # ============================================
-alias zshrc='cursor ~/.zshrc'
-alias aliases='cursor ~/.zsh_aliases'
-alias gitconfig='cursor ~/.gitconfig'
+alias zshrc='chezmoi edit --apply ~/.zshrc'
+alias aliases='chezmoi edit --apply ~/.zsh_aliases'
+alias gitconfig='chezmoi edit --apply ~/.gitconfig'
 
 # ============================================
 # Misc Utilities

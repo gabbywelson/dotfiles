@@ -29,6 +29,12 @@ brew "gh"           # GitHub CLI - PRs, issues, actions from terminal
 brew "starship"     # Cross-shell prompt - fast (Rust), beautiful
 
 # ============================================
+# Shell Enhancements
+# ============================================
+brew "thefuck"      # Corrects your previous command typos
+brew "atuin"        # Magical shell history - sync, search, stats
+
+# ============================================
 # Utilities
 # ============================================
 brew "chezmoi"      # Dotfiles manager
