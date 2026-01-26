@@ -2,6 +2,14 @@
 # This file is processed when you run `chezmoi init`
 # Values are prompted and stored in ~/.config/chezmoi/chezmoi.toml
 
+{{- $isWork := false -}}
+{{- if stdinIsATTY -}}
+{{-   $isWork = promptBoolOnce . "isWork" "Is this a work machine" -}}
+{{- end }}
+
+[data]
+    isWork = {{ $isWork }}
+
 [edit]
     command = "cursor"
     args = ["--wait"]

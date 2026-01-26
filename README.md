@@ -34,27 +34,27 @@ Plus: `lazygit`, `fzf`, `gh`, `tldr`, `jq`
 ### Fresh Mac (One Command!)
 
 ```bash
-sh -c "$(curl -fsLS get.chezmoi.io)" -- init --apply YOUR_GITHUB_USERNAME
+sh -c "$(curl -fsLS get.chezmoi.io)" -- init --apply gabbywelson
 ```
 
 This will:
 1. Install chezmoi
-2. Clone your dotfiles
-3. Run the bootstrap script (installs Homebrew packages, fonts, etc.)
-4. Apply all config files
+2. Clone the dotfiles repo
+3. Prompt if this is a work machine (sets git email accordingly)
+4. Install Homebrew (if needed)
+5. Install all packages from Brewfile
+6. Apply all config files
 
 ### After Install
 
 ```bash
-# 1. Restart your terminal
+# 1. Restart your terminal (required for PATH updates)
 exec zsh
 
-# 2. Set your Git identity
-git config --global user.name "Your Name"
-git config --global user.email "your@email.com"
-
-# 3. In Ghostty: set font to "MesloLGS Nerd Font"
+# 2. In Ghostty: set font to "MesloLGS Nerd Font"
 ```
+
+> **Note:** Git name/email are configured automatically based on whether you selected "work machine" during setup.
 
 ---
 
@@ -62,16 +62,17 @@ git config --global user.email "your@email.com"
 
 ```
 ~/dotfiles/
+├── .chezmoi.toml.tmpl          # Chezmoi config (prompts for work/personal)
 ├── Brewfile                    # All Homebrew packages
 ├── dot_zshrc                   # → ~/.zshrc
 ├── dot_zsh_plugins.txt         # → ~/.zsh_plugins.txt
-├── dot_gitconfig               # → ~/.gitconfig
+├── dot_gitconfig.tmpl          # → ~/.gitconfig (templated for work/personal email)
 ├── dot_config/
 │   ├── starship.toml           # → ~/.config/starship.toml
 │   └── ghostty/
 │       └── config              # → ~/.config/ghostty/config
 └── .chezmoiscripts/
-    └── run_once_before_...     # Bootstrap script
+    └── run_once_before_...     # Bootstrap script (installs Homebrew, packages)
 ```
 
 Files prefixed with `dot_` become dotfiles (e.g., `dot_zshrc` → `~/.zshrc`).
