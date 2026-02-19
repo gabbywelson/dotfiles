@@ -14,6 +14,9 @@ eval "$(/opt/homebrew/bin/brew shellenv)"
 # Add local bin to path
 export PATH="$HOME/.local/bin:$PATH"
 
+# Go binaries
+export PATH="$HOME/go/bin:$PATH"
+
 # ============================================
 # SECTION 2: Antidote Plugin Manager (FAST!)
 # ============================================
