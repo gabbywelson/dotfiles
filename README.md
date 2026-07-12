@@ -45,9 +45,9 @@ The repository intentionally does not manage agent credentials, histories,
 session databases, plugin state, SSH private keys, or application caches.
 
 Shared agent skills live under `~/.agents/skills`. Orrery is cloned at
-`~/Documents/Notes/Orrery` on macOS and `~/vaults/orrery` on Linux. A launchd
-job and user systemd timer conservatively synchronize the private Git-backed
-vault every ten minutes.
+`~/Documents/Notes/Orrery` on macOS and `~/vaults/orrery` on Linux. Obsidian Git
+synchronizes Mac edits while Obsidian is open; a user systemd timer
+conservatively synchronizes the Linux clone every ten minutes.
 
 ## Rollback
 
