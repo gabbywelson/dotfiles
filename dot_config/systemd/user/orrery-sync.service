@@ -5,5 +5,7 @@ Wants=network-online.target
 
 [Service]
 Type=oneshot
+WorkingDirectory=%h/vaults/orrery
 ExecStart=%h/.local/bin/orrery sync --actor resident-auto
+SuccessExitStatus=75
 Nice=10
