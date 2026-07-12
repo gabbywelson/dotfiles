@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+set -u
+
+fail=0
+check() {
+  if command -v "$1" >/dev/null 2>&1; then printf 'ok   %-12s %s\n' "$1" "$(command -v "$1")"
+  else printf 'MISS %-12s\n' "$1"; fail=1; fi
+}
+
+echo "host: $(hostname) ($(uname -s) $(uname -m))"
+for tool in git chezmoi rg fd fzf bat eza zoxide starship tmux gh mise direnv jq; do check "$tool"; done
+for agent in codex claude; do check "$agent"; done
+[ -d "$HOME/code" ] || { echo "MISS ~/code"; fail=1; }
+git config --global user.email | grep -qx 'gabby@welson.net' || { echo 'MISS personal Git identity'; fail=1; }
+if [ "$(uname -s)" = Linux ]; then
+  check docker
+  docker info >/dev/null 2>&1 || { echo 'MISS usable Docker daemon'; fail=1; }
+fi
+exit "$fail"

@@ -1,20 +1,15 @@
-# .chezmoi.toml.tmpl - Machine-specific configuration
-# This file is processed when you run `chezmoi init`
-# Values are prompted and stored in ~/.config/chezmoi/chezmoi.toml
-
-{{- $isWork := false -}}
-{{- if stdinIsATTY -}}
-{{-   $isWork = promptBoolOnce . "isWork" "Is this a work machine" -}}
-{{- end }}
-
-sourceDir = {{ .chezmoi.homeDir }}/dotfiles
+sourceDir = "{{ .chezmoi.homeDir }}/dotfiles"
 
 [data]
-    isWork = {{ $isWork }}
+    machineRole = {{ if eq .chezmoi.os "darwin" }}"workstation"{{ else }}"agent-host"{{ end }}
 
 [edit]
+{{- if eq .chezmoi.os "darwin" }}
     command = "cursor"
     args = ["--wait"]
+{{- else }}
+    command = "vim"
+{{- end }}
 
 [diff]
     pager = "delta"

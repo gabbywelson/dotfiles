@@ -1,28 +1,19 @@
 # .chezmoiignore - Files NOT to apply to home directory
 # These stay in the repo but don't get copied
 
-# Documentation
 README.md
-LICENSE
-docs/
-
-# Brewfile is used by script, not placed in home
 Brewfile
+packages/
+scripts/
 
-# macOS junk
-.DS_Store
-**/.DS_Store
-
-# Editor/IDE files
-*.swp
-*.swo
-*~
-.idea/
-.vscode/
-
-# Don't manage sensitive files
-.env
-.env.*
-*.pem
-*.key
-id_rsa*
+{{ if eq .chezmoi.os "darwin" }}
+.bashrc
+.inputrc
+.config/bash/
+{{ else }}
+.zshrc
+.zshenv
+.zsh_aliases
+.zsh_plugins.txt
+.config/ghostty/
+{{ end }}

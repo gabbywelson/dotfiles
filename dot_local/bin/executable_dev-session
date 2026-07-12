@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+usage() { echo "usage: dev-session [list|attach NAME|open PATH [NAME]|kill NAME]"; }
+command=${1:-list}
+
+case "$command" in
+  list) tmux list-sessions 2>/dev/null || true ;;
+  attach) [ $# -eq 2 ] || { usage; exit 2; }; exec tmux new-session -A -s "$2" ;;
+  open)
+    path=${2:-$PWD}
+    [ -d "$path" ] || { echo "not a directory: $path" >&2; exit 1; }
+    name=${3:-$(basename "$(cd "$path" && pwd)")}
+    name=${name//./-}
+    tmux new-session -Ad -s "$name" -c "$path"
+    exec tmux attach-session -t "$name"
+    ;;
+  kill) [ $# -eq 2 ] || { usage; exit 2; }; tmux kill-session -t "$2" ;;
+  *) usage; exit 2 ;;
+esac

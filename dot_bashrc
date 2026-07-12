@@ -1,0 +1,10 @@
+# Managed by chezmoi. Machine-local changes belong in ~/.config/bash/90-local.sh.
+case $- in *i*) ;; *) return ;; esac
+
+shopt -s checkwinsize globstar cdspell dirspell autocd histappend
+PS1='\u@\h:\w\$ '
+
+for fragment in ~/.config/bash/[0-9][0-9]-*.sh; do
+  [ -r "$fragment" ] && . "$fragment"
+done
+unset fragment

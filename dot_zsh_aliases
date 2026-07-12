@@ -7,7 +7,7 @@
 alias cl='clear'
 alias c='clear'
 alias q='exit'
-alias reload='source ~/.zshrc && echo "Reloaded ~/.zshrc"'
+alias reload='exec zsh'
 alias dotfiles='cursor ~/dotfiles'  # Open dotfiles repo in editor
 
 # ============================================
@@ -28,6 +28,7 @@ alias la='eza -a --icons --group-directories-first'
 alias lt='eza --tree --level=2 --icons'
 alias lta='eza --tree --level=2 --icons -a'
 alias tree='eza --tree --icons'
+alias t='command tree --gitignore --prune'  # Show tree filtered by .gitignore
 
 # ============================================
 # File Operations (safer defaults)
@@ -47,8 +48,7 @@ alias less='bat'
 # ============================================
 # Search (ripgrep, fd)
 # ============================================
-alias grep='rg'
-alias find='fd'
+# Keep standard command names predictable in scripts and copied commands.
 
 # ============================================
 # Git
@@ -63,8 +63,8 @@ alias gp='git push'
 alias gl='git pull'
 alias gd='git diff'
 alias gds='git diff --staged'
-alias gco='git checkout'
-alias gcb='git checkout -b'
+alias gco='git switch'
+alias gcb='git switch -c'
 alias gb='git branch'
 alias gba='git branch -a'
 alias glog='git log --oneline --graph --decorate -15'
@@ -114,7 +114,7 @@ alias path='echo -e ${PATH//:/\\n}'  # Print PATH, one entry per line
 alias now='date +"%Y-%m-%d %H:%M:%S"'
 alias week='date +%V'  # Week number
 alias ip='curl -s ifconfig.me'  # Public IP
-alias localip="ipconfig getifaddr en0"  # Local IP
+alias localip='ipconfig getifaddr en0'  # Local IP
 
 # ============================================
 # macOS Specific
@@ -125,8 +125,15 @@ alias hidefiles='defaults write com.apple.finder AppleShowAllFiles -bool false &
 alias showfiles='defaults write com.apple.finder AppleShowAllFiles -bool true && killall Finder'
 
 # ============================================
-# Directory Shortcuts (customize these!)
+# Directory shortcuts
 # ============================================
-# alias code='cd ~/code'
-# alias projects='cd ~/projects'
-# alias dl='cd ~/Downloads'
+alias code='cd ~/code'
+alias docs='cd ~/Documents'
+alias dl='cd ~/Downloads'
+
+mkcd() { mkdir -p "$1" && cd "$1"; }
+proj() {
+  local dir
+  dir=$(fd --type d --max-depth 2 . "$HOME/code" 2>/dev/null | fzf)
+  [[ -n "$dir" ]] && cd "$dir"
+}

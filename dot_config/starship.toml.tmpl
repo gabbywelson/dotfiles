@@ -1,0 +1,33 @@
+add_newline = false
+format = "{{ if eq .chezmoi.os "linux" }}$hostname{{ end }}$directory$git_branch$git_status$nodejs$cmd_duration$line_break$character"
+
+[hostname]
+ssh_only = false
+format = "[$hostname](bold yellow) "
+
+[directory]
+truncation_length = 4
+truncate_to_repo = true
+style = "bold cyan"
+
+[git_branch]
+format = "[$symbol$branch]($style) "
+style = "purple"
+
+[git_status]
+format = "([$all_status$ahead_behind]($style) )"
+style = "yellow"
+
+[nodejs]
+format = "[$symbol($version)]($style) "
+
+[cmd_duration]
+min_time = 3000
+format = "took [$duration](yellow) "
+
+[character]
+success_symbol = "[❯](bold green)"
+error_symbol = "[❯](bold red)"
+
+[docker_context]
+disabled = true
