@@ -12,6 +12,7 @@ scripts/
 .config/bash/
 {{ else }}
 .zshrc
+.zprofile
 .zshenv
 .zsh_aliases
 .zsh_plugins.txt
