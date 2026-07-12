@@ -1,4 +1,5 @@
 [ -x /opt/homebrew/bin/brew ] && eval "$(/opt/homebrew/bin/brew shellenv)"
+export ORRERY_VAULT="$HOME/Documents/Notes/Orrery"
 
 # Optional application CLIs.
 [ -d /Applications/Obsidian.app/Contents/MacOS ] && export PATH="$PATH:/Applications/Obsidian.app/Contents/MacOS"

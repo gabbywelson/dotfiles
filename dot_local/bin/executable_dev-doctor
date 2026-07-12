@@ -9,7 +9,7 @@ check() {
 }
 
 echo "host: $(hostname) ($(uname -s) $(uname -m))"
-for tool in git chezmoi rg fd fzf bat eza zoxide starship tmux gh mise direnv jq; do check "$tool"; done
+for tool in git chezmoi rg fd fzf bat eza zoxide starship tmux gh mise direnv jq orrery; do check "$tool"; done
 for agent in codex claude; do check "$agent"; done
 [ -d "$HOME/code" ] || { echo "MISS ~/code"; fail=1; }
 git config --global user.email | grep -qx 'gabby@welson.net' || { echo 'MISS personal Git identity'; fail=1; }

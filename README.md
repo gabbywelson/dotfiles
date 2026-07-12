@@ -25,6 +25,8 @@ chezmoi apply                # apply managed config
 dev-doctor                   # verify the toolchain and identity
 dev-session open ~/code/app  # persistent tmux session for a repository
 dev-session list
+orrery search dockerhost      # search the shared Obsidian knowledge base
+orrery sync --actor codex     # commit, rebase, and push durable updates
 ```
 
 Interactive SSH sessions on Linux attach to tmux session `main`. Bypass once
@@ -41,6 +43,11 @@ command. scp, rsync, and VS Code Remote sessions do not auto-attach.
 
 The repository intentionally does not manage agent credentials, histories,
 session databases, plugin state, SSH private keys, or application caches.
+
+Shared agent skills live under `~/.agents/skills`. Orrery is cloned at
+`~/Documents/Notes/Orrery` on macOS and `~/vaults/orrery` on Linux. A launchd
+job and user systemd timer conservatively synchronize the private Git-backed
+vault every ten minutes.
 
 ## Rollback
 

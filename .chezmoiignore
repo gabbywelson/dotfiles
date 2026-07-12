@@ -10,7 +10,9 @@ scripts/
 .bashrc
 .inputrc
 .config/bash/
+.config/systemd/
 {{ else }}
+Library/
 .zshrc
 .zprofile
 .zshenv

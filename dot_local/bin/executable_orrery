@@ -1,0 +1,102 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+vault_path() {
+  if [ -n "${ORRERY_VAULT:-}" ]; then
+    printf '%s\n' "$ORRERY_VAULT"
+  elif [ "$(uname -s)" = Darwin ]; then
+    printf '%s\n' "$HOME/Documents/Notes/Orrery"
+  else
+    printf '%s\n' "$HOME/vaults/orrery"
+  fi
+}
+
+vault=$(vault_path)
+command=${1:-status}
+[ $# -eq 0 ] || shift
+
+require_vault() {
+  [ -d "$vault/.git" ] || {
+    echo "Orrery vault is not a Git repository: $vault" >&2
+    exit 1
+  }
+}
+
+sync_vault() {
+  local actor="unknown" arg before after lock_root lock_dir
+  while [ $# -gt 0 ]; do
+    arg=$1
+    shift
+    case "$arg" in
+      --actor) [ $# -gt 0 ] || { echo "--actor requires a value" >&2; exit 2; }; actor=$1; shift ;;
+      *) echo "unknown sync argument: $arg" >&2; exit 2 ;;
+    esac
+  done
+  actor=$(printf '%s' "$actor" | tr -cd 'A-Za-z0-9._-')
+  [ -n "$actor" ] || actor=unknown
+
+  require_vault
+  lock_root=${XDG_RUNTIME_DIR:-${TMPDIR:-/tmp}}
+  lock_dir="$lock_root/orrery-sync-${UID:-$(id -u)}.lock"
+  if ! mkdir "$lock_dir" 2>/dev/null; then
+    echo "Orrery sync is already running: $lock_dir" >&2
+    exit 75
+  fi
+  trap 'rmdir "$lock_dir" 2>/dev/null || true' EXIT INT TERM
+
+  if [ -d "$vault/.git/rebase-merge" ] || [ -d "$vault/.git/rebase-apply" ] \
+     || [ -f "$vault/.git/MERGE_HEAD" ]; then
+    echo "Orrery has an unresolved merge or rebase; refusing to sync." >&2
+    exit 1
+  fi
+
+  before=$(git -C "$vault" status --porcelain)
+  if [ -n "$before" ]; then
+    sleep 2
+    after=$(git -C "$vault" status --porcelain)
+    [ "$before" = "$after" ] || {
+      echo "Orrery changed while preparing to sync; retry after writes settle." >&2
+      exit 75
+    }
+    git -C "$vault" add -A
+    if git -C "$vault" diff --cached | grep -Eq \
+      'Bearer [A-Za-z0-9_-]{16,}|BEGIN (RSA|OPENSSH|EC) PRIVATE KEY'; then
+      git -C "$vault" reset --quiet
+      echo "Potential credential material detected; refusing to commit." >&2
+      exit 1
+    fi
+    if ! git -C "$vault" diff --cached --quiet; then
+      git -C "$vault" commit -m "docs($actor): sync $(date '+%Y-%m-%d %H:%M')"
+    fi
+  fi
+
+  GIT_TERMINAL_PROMPT=0 git -C "$vault" pull --rebase
+  GIT_TERMINAL_PROMPT=0 git -C "$vault" push
+}
+
+case "$command" in
+  path) printf '%s\n' "$vault" ;;
+  status) require_vault; git -C "$vault" status --short --branch ;;
+  search)
+    require_vault
+    [ $# -gt 0 ] || { echo "usage: orrery search <query>" >&2; exit 2; }
+    rg -n -i --glob '*.md' -- "$*" "$vault"
+    ;;
+  sync) sync_vault "$@" ;;
+  open)
+    require_vault
+    if [ "$(uname -s)" = Darwin ]; then open 'obsidian://open?vault=Orrery'; else printf '%s\n' "$vault"; fi
+    ;;
+  doctor)
+    require_vault
+    test "$(git -C "$vault" remote get-url origin)" = 'git@github.com:gabbywelson/orrery.git'
+    git -C "$vault" diff --check
+    git -C "$vault" fsck --no-dangling --no-progress >/dev/null
+    command -v rg >/dev/null
+    printf 'ok: %s\n' "$vault"
+    ;;
+  *)
+    echo "usage: orrery [path|status|search <query>|sync [--actor name]|open|doctor]" >&2
+    exit 2
+    ;;
+esac

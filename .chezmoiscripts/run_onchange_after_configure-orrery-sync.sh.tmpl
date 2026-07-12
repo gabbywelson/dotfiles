@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+mkdir -p "$HOME/.local/state/orrery"
+{{ if eq .chezmoi.os "darwin" -}}
+label="gui/$(id -u)/net.welson.orrery-sync"
+plist="$HOME/Library/LaunchAgents/net.welson.orrery-sync.plist"
+launchctl bootout "$label" 2>/dev/null || true
+launchctl bootstrap "gui/$(id -u)" "$plist"
+{{ else -}}
+systemctl --user daemon-reload
+systemctl --user enable --now orrery-sync.timer
+{{ end -}}

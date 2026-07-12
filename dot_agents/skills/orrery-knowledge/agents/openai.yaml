@@ -1,0 +1,4 @@
+interface:
+  display_name: "Orrery Knowledge"
+  short_description: "Search and interpret the Orrery vault"
+  default_prompt: "Use $orrery-knowledge to find the durable context relevant to this task."
