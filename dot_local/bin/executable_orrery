@@ -42,7 +42,9 @@ sync_vault() {
     echo "Orrery sync is already running: $lock_dir" >&2
     exit 75
   fi
-  trap 'rmdir "$lock_dir" 2>/dev/null || true' EXIT INT TERM
+  ORRERY_LOCK_DIR=$lock_dir
+  export ORRERY_LOCK_DIR
+  trap 'if [ -n "${ORRERY_LOCK_DIR:-}" ]; then rmdir "$ORRERY_LOCK_DIR" 2>/dev/null || true; fi' EXIT INT TERM
 
   if [ -d "$vault/.git/rebase-merge" ] || [ -d "$vault/.git/rebase-apply" ] \
      || [ -f "$vault/.git/MERGE_HEAD" ]; then
