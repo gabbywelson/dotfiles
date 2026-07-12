@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
+export PATH="$HOME/.local/bin:$PATH"
 
 usage() { echo "usage: dev-session [list|attach NAME|open PATH [NAME]|kill NAME]"; }
 command=${1:-list}

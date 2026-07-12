@@ -17,6 +17,7 @@ lazygit
 ripgrep
 starship
 tmux
+time
 tokei
 vim
 zoxide
