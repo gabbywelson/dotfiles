@@ -1,6 +1,7 @@
 command -v mise >/dev/null 2>&1 && eval "$(mise activate bash)"
 command -v direnv >/dev/null 2>&1 && eval "$(direnv hook bash)"
 command -v zoxide >/dev/null 2>&1 && eval "$(zoxide init bash)"
+[ "${TERM:-dumb}" != dumb ] && command -v starship >/dev/null 2>&1 && eval "$(starship init bash)"
 
 if [ -t 0 ] && [ -t 1 ] && command -v fzf >/dev/null 2>&1; then
   eval "$(fzf --bash)"
@@ -11,4 +12,3 @@ if [ -t 0 ] && [ -t 1 ] && command -v fzf >/dev/null 2>&1; then
 fi
 
 [ -t 0 ] && [ -t 1 ] && command -v atuin >/dev/null 2>&1 && eval "$(atuin init bash --disable-up-arrow)"
-[ "${TERM:-dumb}" != dumb ] && command -v starship >/dev/null 2>&1 && eval "$(starship init bash)"
