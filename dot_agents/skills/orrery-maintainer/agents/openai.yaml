@@ -1,4 +1,0 @@
-interface:
-  display_name: "Orrery Maintainer"
-  short_description: "Safely update and sync durable knowledge"
-  default_prompt: "Use $orrery-maintainer to record this durable change in Orrery and synchronize it."

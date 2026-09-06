@@ -1,4 +1,0 @@
-interface:
-  display_name: "Orrery Projects"
-  short_description: "Track projects, status, and next actions"
-  default_prompt: "Use $orrery-projects to review or update my active project directory and tasks."

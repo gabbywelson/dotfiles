@@ -1,4 +1,0 @@
-interface:
-  display_name: "Orrery Homelab"
-  short_description: "Operate and document the Orrery homelab"
-  default_prompt: "Use $orrery-homelab to inspect the documented setup before changing homelab state."
