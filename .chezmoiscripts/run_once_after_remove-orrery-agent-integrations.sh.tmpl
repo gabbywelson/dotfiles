@@ -1,0 +1,26 @@
+#!/bin/sh
+set -eu
+
+strip_section() {
+    file=$1
+    heading=$2
+    [ -f "$file" ] || return 0
+    HEADING="$heading" perl -0pi -e '
+        my $heading = quotemeta($ENV{"HEADING"});
+        s/\n$heading\n.*?(?=\n## |\z)//s;
+    ' "$file"
+}
+
+strip_section "$HOME/.openclaw/workspace/AGENTS.md" "## Orrery Knowledge Base"
+strip_section "$HOME/.openclaw/workspace/MEMORY.md" "## Durable Knowledge"
+strip_section "$HOME/.openclaw/workspace/TOOLS.md" "## Orrery"
+
+if [ -f "$HOME/.hermes/memories/MEMORY.md" ]; then
+    perl -0pi -e 's/\n§\n\nThe private Git-backed Obsidian vault at `~\/vaults\/orrery` is the canonical durable record shared by Gabby, Codex, Claude, Hermes, and OpenClaw\..*?group\/shared contexts\.\n?//s' \
+        "$HOME/.hermes/memories/MEMORY.md"
+fi
+
+if [ -f "$HOME/.hermes/memories/USER.md" ]; then
+    perl -0pi -e 's/\n§\n\nGabby prefers Obsidian and portable Markdown for durable documentation\. Lasting shared knowledge belongs in the Orrery vault; secret values never do\.\n?//s' \
+        "$HOME/.hermes/memories/USER.md"
+fi
