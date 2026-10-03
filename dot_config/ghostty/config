@@ -1,5 +1,5 @@
 # ~/.config/ghostty/config
-# Aesthetic terminal with Catppuccin Mocha theme
+# macOS Ghostty configuration managed by chezmoi
 #
 # Docs: https://ghostty.org/docs/config
 
@@ -11,12 +11,8 @@
 font-family = MesloLGS Nerd Font
 font-size = 14
 
-# ============================================
-# Theme
-# ============================================
-
-# Catppuccin Mocha (built into Ghostty!)
-theme = catppuccin-mocha
+# Catppuccin everywhere: Latte in light mode, Mocha in dark (follows macOS).
+theme = light:catppuccin-latte,dark:catppuccin-mocha
 
 # ============================================
 # Window
@@ -25,6 +21,7 @@ theme = catppuccin-mocha
 # Comfortable padding
 window-padding-x = 12
 window-padding-y = 10
+window-padding-balance = true
 
 # Initial size (columns x rows)
 window-width = 120
@@ -50,6 +47,9 @@ background-blur-radius = 20
 cursor-style = bar
 cursor-style-blink = true
 
+# Keep background panes readable while making the focused split obvious
+unfocused-split-opacity = 0.85
+
 # ============================================
 # Behavior
 # ============================================
@@ -64,7 +64,11 @@ mouse-hide-while-typing = true
 
 # Shell integration
 shell-integration = zsh
-shell-integration-features = cursor,sudo,title
+shell-integration-features = cursor,sudo,title,ssh-env,ssh-terminfo,path
+
+# Use left Option for terminal shortcuts while preserving right Option for
+# macOS Unicode characters.
+macos-option-as-alt = left
 
 # Confirm before closing with running processes
 confirm-close-surface = true
@@ -82,3 +86,11 @@ window-vsync = true
 
 # Ghostty has great defaults, minimal customization needed
 # See: ghostty +show-keys for current bindings
+
+# Drop-down terminal from anywhere (requires macOS Accessibility permission)
+keybind = global:ctrl+grave_accent=toggle_quick_terminal
+quick-terminal-position = top
+quick-terminal-size = 40%
+quick-terminal-screen = mouse
+quick-terminal-autohide = true
+quick-terminal-space-behavior = move
