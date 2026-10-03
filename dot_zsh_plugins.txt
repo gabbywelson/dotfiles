@@ -1,0 +1,5 @@
+# antidote plugin list - loaded by ~/.zshrc after compinit. Order matters:
+# fzf-tab must load before plugins that wrap widgets.
+Aloxaf/fzf-tab
+zsh-users/zsh-autosuggestions
+zdharma-continuum/fast-syntax-highlighting

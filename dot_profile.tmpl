@@ -1,7 +1,11 @@
-case ":$PATH:" in
-  *":$HOME/.local/bin:"*) ;;
-  *) PATH="$HOME/.local/bin:$PATH" ;;
-esac
+# Login shells, including `sh -lc` used by agents and t3code: user tools + mise shims.
+for dir in "$HOME/.local/share/mise/shims" "$HOME/.local/bin"; do
+  case ":$PATH:" in
+    *":$dir:"*) ;;
+    *) [ -d "$dir" ] && PATH="$dir:$PATH" ;;
+  esac
+done
+unset dir
 export PATH
 export ORRERY_VAULT="{{ if eq .chezmoi.os "darwin" }}$HOME/Documents/Notes/Orrery{{ else }}$HOME/vaults/orrery{{ end }}"
 {{- if eq .chezmoi.os "linux" }}

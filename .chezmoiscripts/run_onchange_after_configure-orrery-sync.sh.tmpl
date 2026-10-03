@@ -4,7 +4,7 @@ set -euo pipefail
 # service: {{ include "dot_config/systemd/user/orrery-sync.service" | sha256sum }}
 # timer: {{ include "dot_config/systemd/user/orrery-sync.timer" | sha256sum }}
 mkdir -p "$HOME/.local/state/orrery"
-{{ if eq .chezmoi.os "linux" -}}
+{{ if and (eq .chezmoi.os "linux") (stat (joinPath .chezmoi.homeDir "vaults/orrery")) -}}
 systemctl --user daemon-reload
 systemctl --user enable --now orrery-sync.timer
 {{ end -}}

@@ -1,0 +1,26 @@
+# Third-party pieces chezmoi fetches on apply (refreshed weekly/monthly).
+
+# zsh plugin manager; plugin list lives in ~/.zsh_plugins.txt
+[".antidote"]
+    type = "git-repo"
+    url = "https://github.com/mattmc3/antidote.git"
+    refreshPeriod = "168h"
+    clone.args = ["--depth", "1"]
+
+# tmux plugin manager; plugins are declared in ~/.tmux.conf
+[".tmux/plugins/tpm"]
+    type = "git-repo"
+    url = "https://github.com/tmux-plugins/tpm.git"
+    refreshPeriod = "168h"
+    clone.args = ["--depth", "1"]
+
+# Catppuccin Mocha themes (https://github.com/catppuccin)
+[".config/bat/themes/Catppuccin Mocha.tmTheme"]
+    type = "file"
+    url = "https://raw.githubusercontent.com/catppuccin/bat/main/themes/Catppuccin%20Mocha.tmTheme"
+    refreshPeriod = "720h"
+
+[".config/btop/themes/catppuccin_mocha.theme"]
+    type = "file"
+    url = "https://raw.githubusercontent.com/catppuccin/btop/main/themes/catppuccin_mocha.theme"
+    refreshPeriod = "720h"
