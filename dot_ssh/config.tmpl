@@ -1,15 +1,25 @@
 {{- if eq .chezmoi.os "darwin" }}
+# Added by OrbStack: 'orb' SSH host for Linux machines
+# This only works if it's at the top of ssh_config (before any Host blocks).
+Include ~/.orbstack/ssh/config
+
 Host *
     IdentityAgent "~/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock"
 
-Host dockerhost
-    HostName dockerhost
+# Homelab (see go/docs). Explicit users: the Mac login is "welson", and
+# Tailscale SSH rejects users the tailnet policy doesn't allow.
+Host pluto
+    HostName pluto
     User gabby
     ServerAliveInterval 30
     ServerAliveCountMax 3
     ControlMaster auto
     ControlPath ~/.ssh/cm-%C
     ControlPersist 10m
+
+Host pve
+    HostName pve
+    User root
 {{- else }}
 Host github.com
     HostName github.com

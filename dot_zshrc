@@ -62,5 +62,14 @@ if [[ ${TERM:-dumb} != dumb ]] && command -v starship >/dev/null 2>&1; then
   eval "$(starship init zsh)"
 fi
 
+# --- Installer-managed tools (guarded: each only where installed) ------------
+if [[ -d $HOME/.bun ]]; then
+  export BUN_INSTALL="$HOME/.bun"
+  path=("$BUN_INSTALL/bin" $path)
+  [[ -s $BUN_INSTALL/_bun ]] && source "$BUN_INSTALL/_bun"
+fi
+[[ -r $HOME/.railway/env ]] && source "$HOME/.railway/env"
+command -v entire >/dev/null 2>&1 && source <(entire completion zsh)
+
 [[ -r ~/.zsh_aliases ]] && source ~/.zsh_aliases
 [[ -r ~/.zshrc.local ]] && source ~/.zshrc.local   # machine-local, unmanaged
