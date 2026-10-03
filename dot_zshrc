@@ -1,23 +1,55 @@
-# Managed by chezmoi. Keep startup guarded so partial installs remain usable.
+# ~/.zshrc - managed by chezmoi (~/dotfiles/dot_zshrc). Shared by macOS and Linux.
+# Startup is guarded so a half-installed machine still gets a usable shell.
+
+# --- PATH & editor -----------------------------------------------------------
 [[ -x /opt/homebrew/bin/brew ]] && eval "$(/opt/homebrew/bin/brew shellenv)"
 typeset -U path PATH
 path=("$HOME/.local/bin" "$HOME/go/bin" $path)
 
-export EDITOR="cursor --wait"
-export VISUAL="$EDITOR"
-export PAGER="less"
-export LESS="-R -F -i"
+if command -v cursor >/dev/null 2>&1; then export EDITOR="cursor --wait"; else export EDITOR=vim; fi
+export VISUAL="$EDITOR" PAGER=less LESS="-R -F -i"
 
-HISTFILE="$HOME/.zsh_history"
-HISTSIZE=100000
-SAVEHIST=200000
+# Unknown $TERM over SSH (e.g. no terminfo for this terminal) breaks tmux/vim.
+if [[ -n $TERM && $TERM != dumb ]] && command -v infocmp >/dev/null 2>&1 && ! infocmp "$TERM" >/dev/null 2>&1; then
+  export TERM=xterm-256color
+fi
+
+# --- Linux over SSH: land in the persistent tmux session "main" --------------
+# Skip with NOTMUX=1 or `touch ~/.notmux`. Non-interactive SSH, scp and editors
+# never auto-attach.
+if [[ $OSTYPE == linux* && -o interactive && -n $SSH_TTY && -z $TMUX && -z $NOTMUX && ! -e ~/.notmux \
+      && $TERM != dumb && $TERM_PROGRAM != vscode && -z $VSCODE_IPC_HOOK_CLI ]] && command -v tmux >/dev/null 2>&1; then
+  exec tmux new-session -A -s main
+fi
+
+# --- History & options -------------------------------------------------------
+HISTFILE="$HOME/.zsh_history" HISTSIZE=100000 SAVEHIST=200000
 setopt APPEND_HISTORY SHARE_HISTORY HIST_IGNORE_ALL_DUPS HIST_IGNORE_SPACE
 setopt HIST_REDUCE_BLANKS AUTO_CD NO_BEEP INTERACTIVE_COMMENTS EXTENDED_GLOB
 
+# --- Completion (fzf-tab replaces the menu below once plugins load) ---------
 autoload -Uz compinit
 if [[ -n "$HOME/.zcompdump"(#qN.mh+24) ]]; then compinit; else compinit -C; fi
-zstyle ':completion:*' menu select
 zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}'
+zstyle ':completion:*' menu no
+zstyle ':fzf-tab:complete:cd:*' fzf-preview 'eza -1 --color=always --icons $realpath'
+
+# --- Plugins via antidote (list: ~/.zsh_plugins.txt) ------------------------
+if [[ -r ~/.antidote/antidote.zsh ]]; then
+  source ~/.antidote/antidote.zsh
+  antidote load
+fi
+
+# --- Tools -------------------------------------------------------------------
+# Catppuccin Mocha for fzf (https://github.com/catppuccin/fzf)
+export FZF_DEFAULT_OPTS="--height=45% --layout=reverse --border \
+  --color=bg+:#313244,bg:#1e1e2e,spinner:#f5e0dc,hl:#f38ba8 \
+  --color=fg:#cdd6f4,header:#f38ba8,info:#cba6f7,pointer:#f5e0dc \
+  --color=marker:#b4befe,fg+:#cdd6f4,prompt:#cba6f7,hl+:#f38ba8 \
+  --color=selected-bg:#45475a,border:#6c7086,label:#cdd6f4"
+export FZF_DEFAULT_COMMAND='fd --type f --hidden --exclude .git'
+export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
+export FZF_ALT_C_COMMAND='fd --type d --hidden --exclude .git'
 
 command -v mise >/dev/null 2>&1 && eval "$(mise activate zsh)"
 command -v direnv >/dev/null 2>&1 && eval "$(direnv hook zsh)"
@@ -30,15 +62,5 @@ if [[ ${TERM:-dumb} != dumb ]] && command -v starship >/dev/null 2>&1; then
   eval "$(starship init zsh)"
 fi
 
-export FZF_DEFAULT_OPTS='--height=45% --layout=reverse --border'
-export FZF_DEFAULT_COMMAND='fd --type f --hidden --exclude .git'
-export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
-export FZF_ALT_C_COMMAND='fd --type d --hidden --exclude .git'
-
 [[ -r ~/.zsh_aliases ]] && source ~/.zsh_aliases
-
-for plugin in \
-  /opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh \
-  /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh; do
-  [[ -r "$plugin" ]] && source "$plugin"
-done
+[[ -r ~/.zshrc.local ]] && source ~/.zshrc.local   # machine-local, unmanaged

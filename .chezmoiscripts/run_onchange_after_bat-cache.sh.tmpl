@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+# Rebuild bat's theme cache when the bat config changes (delta reuses it).
+# config: {{ include "dot_config/bat/config" | sha256sum }}
+set -euo pipefail
+for b in bat batcat; do
+  if command -v "$b" >/dev/null 2>&1; then "$b" cache --build >/dev/null; break; fi
+done

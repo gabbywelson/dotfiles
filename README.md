@@ -1,8 +1,11 @@
 # Dotfiles
 
 One chezmoi-managed development environment for a macOS workstation and Debian
-agent hosts. Zsh remains native on macOS, Bash remains native on Debian, and
-Git, Starship, tmux, agent guidance, and helper commands are shared.
+agent hosts (`pluto`). Everything is shared: zsh (antidote + fzf-tab,
+autosuggestions, fast-syntax-highlighting), a Catppuccin Mocha Starship prompt,
+tmux (prefix `Ctrl-a`, tpm, catppuccin, resurrect/continuum), Git + delta, and
+Catppuccin themes for bat, btop, fzf and lazygit. Bash config remains on Debian
+as a fallback.
 
 ## Bootstrap
 
@@ -29,7 +32,8 @@ orrery search dockerhost      # search the shared Obsidian knowledge base
 orrery sync --actor codex     # commit, rebase, and push durable updates
 ```
 
-Interactive SSH sessions on Linux attach to tmux session `main`. Bypass once
+Interactive SSH sessions on Linux attach to tmux session `main` (nested in a
+local tmux? press `Ctrl-a Ctrl-a` to reach the inner one). Bypass once
 with `NOTMUX=1`, disable it with `touch ~/.notmux`, or use a noninteractive SSH
 command. scp, rsync, and VS Code Remote sessions do not auto-attach.
 

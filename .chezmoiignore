@@ -13,10 +13,10 @@ scripts/
 .config/systemd/
 {{ else }}
 Library/
-.zshrc
 .zprofile
-.zshenv
-.zsh_aliases
-.zsh_plugins.txt
 .config/ghostty/
+{{- /* Only hosts with the Orrery vault cloned get the sync timer. */}}
+{{- if not (stat (joinPath .chezmoi.homeDir "vaults/orrery")) }}
+.config/systemd/user/orrery-sync.*
+{{- end }}
 {{ end }}

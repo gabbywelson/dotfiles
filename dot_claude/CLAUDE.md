@@ -5,4 +5,4 @@
 - Keep changes scoped, test behavior that changed, and report commands that could not run.
 - Never commit credentials, authentication state, generated sessions, or local environment files.
 - Prefer `rg`, `fd`, structured parsers, and repository-provided scripts.
-- On `dockerhost`, keep long-running work inside a named tmux session.
+- On Linux hosts (`pluto`, `charon`), keep long-running work inside a named tmux session.

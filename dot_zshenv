@@ -1,4 +1,9 @@
-case ":$PATH:" in
-  *":$HOME/.local/bin:"*) ;;
-  *) export PATH="$HOME/.local/bin:$PATH" ;;
-esac
+# ~/.zshenv - read by every zsh, including non-interactive ones (agents, t3code,
+# `ssh host cmd`). Keep it to PATH only.
+for dir in "$HOME/.local/share/mise/shims" "$HOME/.local/bin"; do
+  case ":$PATH:" in
+    *":$dir:"*) ;;
+    *) [ -d "$dir" ] && export PATH="$dir:$PATH" ;;
+  esac
+done
+unset dir
