@@ -27,6 +27,12 @@ HISTFILE="$HOME/.zsh_history" HISTSIZE=100000 SAVEHIST=200000
 setopt APPEND_HISTORY SHARE_HISTORY HIST_IGNORE_ALL_DUPS HIST_IGNORE_SPACE
 setopt HIST_REDUCE_BLANKS AUTO_CD NO_BEEP INTERACTIVE_COMMENTS EXTENDED_GLOB
 
+# --- Line editor -------------------------------------------------------------
+# zsh picks vi mode when $EDITOR contains "vi"; always use emacs keys.
+bindkey -e
+# Pasted text defaults to reverse video, which looks like a selection.
+zle_highlight+=(paste:none)
+
 # --- Completion (fzf-tab replaces the menu below once plugins load) ---------
 autoload -Uz compinit
 if [[ -n "$HOME/.zcompdump"(#qN.mh+24) ]]; then compinit; else compinit -C; fi
