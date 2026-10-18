@@ -36,7 +36,7 @@ export FZF_DEFAULT_OPTS="--height=50% --layout=reverse --border=rounded --info=i
   --prompt='❯ ' $_fzf_theme --bind=ctrl-/:toggle-preview"
 # fzf-tab (Tab completion, see 40-plugins) gets the same look. It can't reuse
 # FZF_DEFAULT_OPTS: it splits the string without honoring the quotes.
-zstyle ':fzf-tab:*' fzf-flags $_fzf_theme
+zstyle ':fzf-tab:*' fzf-flags $_fzf_theme --bind=ctrl-/:toggle-preview
 if (( $+commands[fd] )); then
   export FZF_DEFAULT_COMMAND='fd --type f --hidden --follow --exclude .git'
   export FZF_CTRL_T_COMMAND=$FZF_DEFAULT_COMMAND
