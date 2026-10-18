@@ -10,7 +10,7 @@
 theme = light:Catppuccin Latte,dark:Catppuccin Mocha
 
 # --- Font ----------------------------------------------------------------------
-# The first installed family wins. Berkeley Mono is commercial (berkeleygraphics.com);
+# The first installed family wins. Berkeley Mono is commercial (usgraphics.com);
 # JetBrains Mono Nerd Font comes from the Brewfile. Icons work with any font,
 # because Ghostty bundles the Nerd Font symbols.
 font-family = "Berkeley Mono"
