@@ -12,7 +12,8 @@ font-family = MesloLGS Nerd Font
 font-size = 14
 
 # Catppuccin everywhere: Latte in light mode, Mocha in dark (follows macOS).
-theme = light:catppuccin-latte,dark:catppuccin-mocha
+# Ghostty 1.2+ theme names are title case; list them with `ghostty +list-themes`.
+theme = light:Catppuccin Latte,dark:Catppuccin Mocha
 
 # ============================================
 # Window
