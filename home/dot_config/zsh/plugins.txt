@@ -1,0 +1,7 @@
+# zsh plugins, bundled by antidote (https://antidote.sh) into ~/.cache/zsh/plugins.zsh.
+# Edit this list, then open a new shell; `dot update` pulls plugin updates.
+# Order matters: fzf-tab must load before plugins that wrap widgets.
+
+Aloxaf/fzf-tab                              # Tab completion as a fuzzy picker with previews
+zsh-users/zsh-autosuggestions               # ghost-text suggestions from history; → accepts
+zdharma-continuum/fast-syntax-highlighting  # commands turn green/red as you type

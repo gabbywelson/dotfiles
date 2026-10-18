@@ -1,9 +1,18 @@
-# ~/.zshenv - read by every zsh, including non-interactive ones (agents, t3code,
-# `ssh host cmd`). Keep it to PATH only.
-for dir in "$HOME/.local/share/mise/shims" "$HOME/.local/bin"; do
-  case ":$PATH:" in
-    *":$dir:"*) ;;
-    *) [ -d "$dir" ] && export PATH="$dir:$PATH" ;;
-  esac
+# ~/.zshenv: read by every zsh, including scripts, agents and `ssh host cmd`.
+# Keep it to PATH and cheap exports; anything slow here slows every zsh.
+
+typeset -U path PATH   # no duplicates; prepending an entry moves it to the front
+
+# Homebrew. Login shells redo this in ~/.zprofile, after macOS's path_helper.
+[[ -d /opt/homebrew/bin ]] && path=(/opt/homebrew/bin /opt/homebrew/sbin $path)
+
+# User-level tool bins, when present. Later entries end up first.
+# mise shims make mise-installed tools work without `mise activate`.
+for dir in ~/go/bin ~/.cargo/bin ~/.bun/bin ~/.grok/bin ~/.opencode/bin \
+           ~/.local/share/mise/shims ~/.local/bin; do
+  [[ -d $dir ]] && path=($dir $path)
 done
 unset dir
+
+# Debian's /etc/zsh/zshrc runs compinit; ours (in ~/.config/zsh) is cached and faster.
+skip_global_compinit=1

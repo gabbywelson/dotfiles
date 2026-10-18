@@ -1,3 +1,11 @@
+# Targets chezmoi deletes on apply: files this repo used to manage or generate.
+
+# Moved into ~/.config/zsh/ (70-aliases.zsh, plugins.txt); the bundle now lives in ~/.cache/zsh.
+.zsh_aliases
+.zsh_plugins.txt
+.zsh_plugins.zsh
+
+# Retired Orrery agent skills.
 .agents/skills/orrery-homelab
 .agents/skills/orrery-knowledge
 .agents/skills/orrery-maintainer

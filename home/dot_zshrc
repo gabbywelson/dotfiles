@@ -1,84 +1,26 @@
-# ~/.zshrc - managed by chezmoi (~/dotfiles/dot_zshrc). Shared by macOS and Linux.
-# Startup is guarded so a half-installed machine still gets a usable shell.
+# ~/.zshrc: interactive zsh. Managed by chezmoi (~/dotfiles/home/dot_zshrc).
+#
+# The real config lives in small numbered modules, loaded in order:
+#   ~/.config/zsh/00-ssh-tmux.zsh   Linux over SSH: attach to tmux session "main"
+#   ~/.config/zsh/10-env.zsh        editor, pager, Catppuccin flavor, TERM fallback
+#   ~/.config/zsh/20-options.zsh    history, shell options, key bindings
+#   ~/.config/zsh/30-completion.zsh compinit + completion styles
+#   ~/.config/zsh/40-plugins.zsh    antidote plugins (list: plugins.txt)
+#   ~/.config/zsh/50-tools.zsh      mise, direnv, zoxide, fzf, atuin, ...
+#   ~/.config/zsh/60-prompt.zsh     starship + transient prompt
+#   ~/.config/zsh/70-aliases.zsh    aliases
+#   ~/.config/zsh/80-functions.zsh  small helper functions
+#
+# Machine-local, unmanaged tweaks go in ~/.zshrc.local (loaded last).
+# When an installer appends lines here, move them into ~/.zshrc.local or a module;
+# `dot doctor` reports that drift.
 
-# --- PATH & editor -----------------------------------------------------------
-[[ -x /opt/homebrew/bin/brew ]] && eval "$(/opt/homebrew/bin/brew shellenv)"
-typeset -U path PATH
-path=("$HOME/.local/bin" "$HOME/go/bin" $path)
+for rc in ~/.config/zsh/[0-9][0-9]-*.zsh(N); do
+  source "$rc"
+done
+unset rc
 
-if command -v cursor >/dev/null 2>&1; then export EDITOR="cursor --wait"; else export EDITOR=vim; fi
-export VISUAL="$EDITOR" PAGER=less LESS="-R -F -i"
-
-# Unknown $TERM over SSH (e.g. no terminfo for this terminal) breaks tmux/vim.
-if [[ -n $TERM && $TERM != dumb ]] && command -v infocmp >/dev/null 2>&1 && ! infocmp "$TERM" >/dev/null 2>&1; then
-  export TERM=xterm-256color
-fi
-
-# --- Linux over SSH: land in the persistent tmux session "main" --------------
-# Skip with NOTMUX=1 or `touch ~/.notmux`. Non-interactive SSH, scp and editors
-# never auto-attach.
-if [[ $OSTYPE == linux* && -o interactive && -n $SSH_TTY && -z $TMUX && -z $NOTMUX && ! -e ~/.notmux \
-      && $TERM != dumb && $TERM_PROGRAM != vscode && -z $VSCODE_IPC_HOOK_CLI ]] && command -v tmux >/dev/null 2>&1; then
-  exec tmux new-session -A -s main
-fi
-
-# --- History & options -------------------------------------------------------
-HISTFILE="$HOME/.zsh_history" HISTSIZE=100000 SAVEHIST=200000
-setopt APPEND_HISTORY SHARE_HISTORY HIST_IGNORE_ALL_DUPS HIST_IGNORE_SPACE
-setopt HIST_REDUCE_BLANKS AUTO_CD NO_BEEP INTERACTIVE_COMMENTS EXTENDED_GLOB
-
-# --- Line editor -------------------------------------------------------------
-# zsh picks vi mode when $EDITOR contains "vi"; always use emacs keys.
-bindkey -e
-# Pasted text defaults to reverse video, which looks like a selection.
-zle_highlight+=(paste:none)
-
-# --- Completion (fzf-tab replaces the menu below once plugins load) ---------
-autoload -Uz compinit
-if [[ -n "$HOME/.zcompdump"(#qN.mh+24) ]]; then compinit; else compinit -C; fi
-zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}'
-zstyle ':completion:*' menu no
-zstyle ':fzf-tab:complete:cd:*' fzf-preview 'eza -1 --color=always --icons $realpath'
-
-# --- Plugins via antidote (list: ~/.zsh_plugins.txt) ------------------------
-if [[ -r ~/.antidote/antidote.zsh ]]; then
-  source ~/.antidote/antidote.zsh
-  antidote load
-fi
-
-# --- Tools -------------------------------------------------------------------
-# Catppuccin Mocha for fzf (https://github.com/catppuccin/fzf)
-export FZF_DEFAULT_OPTS="--height=45% --layout=reverse --border \
-  --color=bg+:#313244,bg:#1e1e2e,spinner:#f5e0dc,hl:#f38ba8 \
-  --color=fg:#cdd6f4,header:#f38ba8,info:#cba6f7,pointer:#f5e0dc \
-  --color=marker:#b4befe,fg+:#cdd6f4,prompt:#cba6f7,hl+:#f38ba8 \
-  --color=selected-bg:#45475a,border:#6c7086,label:#cdd6f4"
-export FZF_DEFAULT_COMMAND='fd --type f --hidden --exclude .git'
-export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
-export FZF_ALT_C_COMMAND='fd --type d --hidden --exclude .git'
-
-command -v mise >/dev/null 2>&1 && eval "$(mise activate zsh)"
-command -v direnv >/dev/null 2>&1 && eval "$(direnv hook zsh)"
-command -v zoxide >/dev/null 2>&1 && eval "$(zoxide init zsh)"
-if [[ -t 0 && -t 1 ]]; then
-  command -v fzf >/dev/null 2>&1 && source <(fzf --zsh)
-  command -v atuin >/dev/null 2>&1 && eval "$(atuin init zsh --disable-up-arrow)"
-fi
-if [[ ${TERM:-dumb} != dumb ]] && command -v starship >/dev/null 2>&1; then
-  eval "$(starship init zsh)"
-fi
-
-# --- Installer-managed tools (guarded: each only where installed) ------------
-if [[ -d $HOME/.bun ]]; then
-  export BUN_INSTALL="$HOME/.bun"
-  path=("$BUN_INSTALL/bin" $path)
-  [[ -s $BUN_INSTALL/_bun ]] && source "$BUN_INSTALL/_bun"
-fi
-[[ -r $HOME/.railway/env ]] && source "$HOME/.railway/env"
-command -v entire >/dev/null 2>&1 && source <(entire completion zsh)
-
-[[ -r ~/.zsh_aliases ]] && source ~/.zsh_aliases
-[[ -r ~/.zshrc.local ]] && source ~/.zshrc.local   # machine-local, unmanaged
+[[ -r ~/.zshrc.local ]] && source ~/.zshrc.local
 
 # Orbit (Becca's pluto/charon companion, ~/orbit). Keep this block last and identical to
 # ~/orbit/shell/orbit.zsh: orbit's install.sh rewrites it at the end of ~/.zshrc. Harmless without orbit.
