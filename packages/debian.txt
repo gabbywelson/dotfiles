@@ -1,28 +1,25 @@
-atuin
-bat
-btop
+# Debian/Ubuntu packages, installed by `dot packages` and scripts/bootstrap-debian.sh.
+# Only the base system and tools Debian ships in good shape. The fast-moving CLI
+# toolbox (starship, atuin, eza, bat, delta, lazygit, yazi, ...) comes from upstream
+# releases via mise: home/dot_config/mise/conf.d/dotfiles.toml.
+
 build-essential
+ca-certificates
 curl
 direnv
-du-dust
-duf
-eza
+bsdextrautils
+btop
 fd-find
-fzf
-gh
 git
-git-delta
-hyperfine
 jq
-just
-lazygit
+less
+locales
 ripgrep
-starship
 tealdeer
 time
 tmux
 tokei
+tree
 unzip
 vim
-zoxide
 zsh

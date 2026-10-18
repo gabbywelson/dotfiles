@@ -1,39 +1,63 @@
-# Core shell and development tools
-brew "atuin"
-brew "bat"
-brew "bottom"
-brew "chezmoi"
-brew "delta"
-brew "direnv"
-brew "docker"
-brew "docker-compose"
-brew "docker-credential-helper"
-brew "dust"
-brew "duf"
-brew "eza"
-brew "fd"
-brew "fzf"
-brew "gh"
-brew "git"
-brew "hyperfine"
+# macOS packages. `dot packages` installs and upgrades them (it runs
+# `brew bundle --file packages/Brewfile` with your machine profile).
+# Homebrew hides other env vars from Brewfiles, hence the HOMEBREW_ prefix.
+# Linux gets the same toolbox from packages/debian.txt + ~/.config/mise/conf.d.
+
+personal = ENV.fetch("HOMEBREW_DOTFILES_PROFILE", "personal") == "personal"
+
+# --- Terminal, shell & prompt ----------------------------------------------------
+cask "ghostty"                      # the terminal
+cask "font-jetbrains-mono-nerd-font"
+brew "starship"                     # prompt
+brew "atuin"                        # searchable, synced shell history (Ctrl-R)
+brew "zoxide"                       # `z proj` jumps to frecent dirs
+brew "fzf"                          # fuzzy finder behind Ctrl-T, Alt-C, Tab
+brew "tmux"
+brew "chezmoi"                      # applies this repo to $HOME
+brew "mise"                         # per-project runtimes (node, python, ...)
+brew "direnv"                       # per-project env vars
+
+# --- Modern replacements for the classics -------------------------------------
+brew "eza"                          # ls
+brew "bat"                          # cat
+brew "fd"                           # find
+brew "ripgrep"                      # grep
+brew "git-delta"                    # diff pager
+brew "dust"                         # du
+brew "duf"                          # df
+brew "btop"                         # top
+brew "sd"                           # sed for find & replace
+brew "xh"                           # curl for APIs
+brew "tealdeer"                     # tldr: example-first man pages
+brew "tree"
+
+# --- Files, docs & data ----------------------------------------------------------
+brew "yazi"                         # terminal file manager (`y`)
+brew "glow"                         # render Markdown in the terminal
 brew "jq"
 brew "yq"
-brew "just"
-brew "lazygit"
-brew "mise"
-brew "ripgrep"
-brew "starship"
-brew "tealdeer"
-brew "tmux"
-brew "tokei"
-brew "tree"
-brew "watchexec"
+
+# --- Git ----------------------------------------------------------------------------
+brew "git"
+brew "gh"
+brew "lazygit"                      # git TUI (`lg`)
+brew "difftastic"                   # syntax-aware diffs (`gdt`)
+brew "jj"                           # Jujutsu, a friendlier Git-compatible VCS
+
+# --- Dev workflow ---------------------------------------------------------------------
+brew "uv"                           # Python packages, venvs and versions
+brew "just"                         # command runner
+brew "watchexec"                    # rerun on file changes
+brew "hyperfine"                    # benchmarking
+brew "tokei"                        # count lines of code
+brew "fastfetch"                    # system summary (`ff`)
 brew "wget"
-brew "zoxide"
-brew "zsh-autosuggestions"
-brew "zsh-syntax-highlighting"
+brew "docker"                       # CLI for OrbStack and remote Docker hosts
+brew "docker-compose"
+brew "docker-credential-helper"
+brew "xcbeautify"                   # readable xcodebuild output
 
-# iOS development support. Xcode itself remains App Store-managed.
-brew "xcbeautify"
-
-cask "font-jetbrains-mono-nerd-font"
+# --- Personal machines only ---------------------------------------------------------
+if personal
+  cask "1password-cli"              # `op`; SSH keys come from the 1Password agent
+end

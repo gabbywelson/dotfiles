@@ -1,4 +1,8 @@
-# Login shells, including `sh -lc` used by agents and t3code: user tools + mise shims.
+# ~/.profile: login shells other than zsh, including `sh -lc` used by agents and t3code.
+# Puts user tools and mise shims on PATH. zsh reads ~/.zshenv and ~/.zprofile instead.
+{{- if eq .chezmoi.os "darwin" }}
+[ -x /opt/homebrew/bin/brew ] && eval "$(/opt/homebrew/bin/brew shellenv)"
+{{- end }}
 for dir in "$HOME/.local/share/mise/shims" "$HOME/.local/bin"; do
   case ":$PATH:" in
     *":$dir:"*) ;;
@@ -7,7 +11,9 @@ for dir in "$HOME/.local/share/mise/shims" "$HOME/.local/bin"; do
 done
 unset dir
 export PATH
+{{- if eq .profile "personal" }}
 export ORRERY_VAULT="{{ if eq .chezmoi.os "darwin" }}$HOME/Documents/Notes/Orrery{{ else }}$HOME/vaults/orrery{{ end }}"
+{{- end }}
 {{- if eq .chezmoi.os "linux" }}
 
 # SSH starts Bash as a login shell, so load the interactive shell setup here.
@@ -15,7 +21,4 @@ export ORRERY_VAULT="{{ if eq .chezmoi.os "darwin" }}$HOME/Documents/Notes/Orrer
 if [ -n "${BASH_VERSION:-}" ] && [ -r "$HOME/.bashrc" ]; then
   . "$HOME/.bashrc"
 fi
-{{- end }}
-{{- if eq .chezmoi.os "darwin" }}
-[ -x /opt/homebrew/bin/brew ] && eval "$(/opt/homebrew/bin/brew shellenv)"
 {{- end }}

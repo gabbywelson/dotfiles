@@ -1,0 +1,37 @@
+# Linux only (see .chezmoiignore): the CLI toolbox, straight from upstream releases.
+# Debian packages most of these years behind (or not at all), and several configs
+# here rely on recent versions. macOS gets the same tools from the Brewfile.
+#
+#   mise install    install anything missing (bootstrap does this)
+#   mise up         upgrade everything (`dot update` does this)
+#   mise ls         what's installed
+#
+# Per-project versions still belong in each project's mise.toml.
+
+[tools]
+node = "lts"
+"npm:@openai/codex" = "latest"
+
+starship = "latest"
+atuin = "latest"
+zoxide = "latest"
+fzf = "latest"
+"github:eza-community/eza" = "latest"
+bat = "latest"
+delta = "latest"
+lazygit = "latest"
+yazi = "latest"
+glow = "latest"
+gh = "latest"
+jj = "latest"
+uv = "latest"
+difftastic = "latest"
+dust = "latest"
+duf = "latest"
+sd = "latest"
+xh = "latest"
+yq = "latest"
+just = "latest"
+hyperfine = "latest"
+watchexec = "latest"
+fastfetch = "latest"

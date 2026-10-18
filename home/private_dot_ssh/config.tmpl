@@ -1,13 +1,21 @@
+# ~/.ssh/config: managed by chezmoi (~/dotfiles/home/private_dot_ssh/config.tmpl).
+# For the first matching host, the first value set wins, so includes come first.
 {{- if eq .chezmoi.os "darwin" }}
+
 # Added by OrbStack: 'orb' SSH host for Linux machines
 # This only works if it's at the top of ssh_config (before any Host blocks).
 Include ~/.orbstack/ssh/config
+{{- end }}
+
+# Machine-local hosts and overrides (work servers, one-offs). Unmanaged.
+Include ~/.ssh/config.d/*
+{{- if and (eq .chezmoi.os "darwin") (eq .profile "personal") }}
 
 Host *
     IdentityAgent "~/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock"
 
-# Homelab (see go/docs). Explicit users: the Mac login is "welson", and
-# Tailscale SSH rejects users the tailnet policy doesn't allow.
+# Homelab (see go/docs). Explicit users: the Mac login is "welson", and Tailscale SSH rejects
+# users the tailnet policy doesn't allow.
 Host pluto
     HostName pluto
     User gabby
@@ -20,7 +28,8 @@ Host pluto
 Host pve
     HostName pve
     User root
-{{- else }}
+{{- else if eq .chezmoi.os "linux" }}
+
 Host github.com
     HostName github.com
     User git

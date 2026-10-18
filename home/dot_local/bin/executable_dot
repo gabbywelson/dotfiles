@@ -1,0 +1,157 @@
+#!/usr/bin/env bash
+# dot: everyday commands for the dotfiles repo. Run `dot help`.
+# Works from the repo too (scripts/bootstrap-*.sh call it before chezmoi has run).
+set -euo pipefail
+
+export PATH="$HOME/.local/share/mise/shims:$HOME/.local/bin:/opt/homebrew/bin:$PATH"
+
+repo=${DOTFILES_REPO:-}
+if [ -z "$repo" ]; then
+  src=$(chezmoi source-path 2>/dev/null) || src="$HOME/dotfiles/home"
+  repo=$(dirname "$src")
+fi
+os=$(uname -s)
+
+bold=$'\e[1m' blue=$'\e[34m' green=$'\e[32m' yellow=$'\e[33m' dim=$'\e[2m' reset=$'\e[0m'
+[ -t 1 ] || bold='' blue='' green='' yellow='' dim='' reset=''
+step() { printf '\n%s%s==>%s %s%s\n' "$bold" "$blue" "$reset$bold" "$*" "$reset"; }
+note() { printf '%s%s%s\n' "$dim" "$*" "$reset"; }
+warn() { printf '%swarning:%s %s\n' "$yellow" "$reset" "$*" >&2; }
+have() { command -v "$1" >/dev/null 2>&1; }
+
+profile() {
+  chezmoi execute-template '{{ .profile }}' 2>/dev/null || echo "${DOTFILES_PROFILE:-personal}"
+}
+
+usage() {
+  cat <<EOF
+${bold}dot${reset}: manage the dotfiles in ${repo/#$HOME/\~}
+
+  ${bold}dot update${reset}      pull the repo, install/upgrade packages, apply config, update plugins
+  ${bold}dot apply${reset}       apply config only (chezmoi apply)
+  ${bold}dot diff${reset}        preview what \`dot apply\` would change
+  ${bold}dot edit${reset} [FILE] edit a managed file (e.g. ~/.zshrc) and apply it; no FILE opens the repo
+  ${bold}dot doctor${reset}      check tools, fonts, config validity and drift
+  ${bold}dot packages${reset}    install/upgrade packages only (Homebrew, or apt + mise)
+  ${bold}dot plugins${reset}     update zsh/tmux plugins, themes, caches and completions
+  ${bold}dot status${reset}      uncommitted repo changes and local drift
+  ${bold}dot cd${reset}          cd into the repo (zsh function)
+EOF
+}
+
+packages() {
+  step "Packages ($(profile) profile)"
+  if [ "$os" = Darwin ]; then
+    have brew || { warn "Homebrew is missing; run scripts/bootstrap-darwin.sh"; return 1; }
+    # Ghostty installed from ghostty.org (it updates itself): don't make brew fight it.
+    local skip=${HOMEBREW_BUNDLE_CASK_SKIP:-}
+    if [ -d /Applications/Ghostty.app ] && ! brew list --cask ghostty >/dev/null 2>&1; then
+      skip="$skip ghostty"
+      note "Ghostty wasn't installed by Homebrew; skipping it (to hand it over: brew install --cask --adopt ghostty)"
+    fi
+    HOMEBREW_BUNDLE_CASK_SKIP="${skip# }" HOMEBREW_DOTFILES_PROFILE=$(profile) \
+      brew bundle --file="$repo/packages/Brewfile" || warn "brew bundle reported problems (see above)"
+  else
+    local missing=() pkg
+    while read -r pkg; do
+      dpkg-query -W -f='${Status}' "$pkg" 2>/dev/null | grep -q 'ok installed' || missing+=("$pkg")
+    done < <(grep -Ev '^[[:space:]]*(#|$)' "$repo/packages/debian.txt")
+    if [ ${#missing[@]} -gt 0 ]; then
+      note "apt: installing ${missing[*]}"
+      local sudo=sudo; [ "$(id -u)" = 0 ] && sudo=
+      $sudo apt-get update -qq && $sudo apt-get install -y "${missing[@]}"
+    else
+      note "apt: all $(grep -Evc '^[[:space:]]*(#|$)' "$repo/packages/debian.txt") packages present"
+    fi
+    # Debian renames these binaries.
+    mkdir -p "$HOME/.local/bin"
+    have fd || { have fdfind && ln -sfn "$(command -v fdfind)" "$HOME/.local/bin/fd"; }
+    if have mise; then
+      mise install --yes || warn "some mise tools failed to install (see above)"
+      mise upgrade --yes || warn "mise upgrade reported problems"
+    fi
+  fi
+}
+
+plugins() {
+  step "Plugins, themes and caches"
+  local cache=${XDG_CACHE_HOME:-$HOME/.cache}/zsh
+  chezmoi apply --refresh-externals --include=externals >/dev/null 2>&1 || warn "refreshing externals failed"
+  if [ -r "$HOME/.antidote/antidote.zsh" ] && have zsh; then
+    mkdir -p "$cache"
+    # Bundling clones any new plugins; then pull updates for all of them.
+    zsh -c 'source ~/.antidote/antidote.zsh && antidote bundle <~/.config/zsh/plugins.txt >|"$1" && antidote update' \
+      _ "$cache/plugins.zsh" >/dev/null 2>&1 || warn "antidote update failed"
+  fi
+  if [ -x "$HOME/.tmux/plugins/tpm/bin/install_plugins" ]; then
+    "$HOME/.tmux/plugins/tpm/bin/install_plugins" >/dev/null 2>&1 || warn "tmux plugin install failed"
+    "$HOME/.tmux/plugins/tpm/bin/update_plugins" all >/dev/null 2>&1 || true
+  fi
+  for b in bat batcat; do have "$b" && { "$b" cache --build >/dev/null; break; }; done
+  have tldr && { tldr --update >/dev/null 2>&1 || true; }
+  rm -f "$cache"/init-*.zsh   # rebuilt on next shell start
+  [ "$os" = Linux ] && completions
+  note "done; open a new shell (or run \`exec zsh\`) to pick everything up"
+}
+
+# Linux: mise-installed tools ship no zsh completions, so generate them.
+completions() {
+  local dir="$HOME/.local/share/zsh/site-functions"
+  mkdir -p "$dir"
+  gen() { local name=$1; shift; have "$1" && "$@" >"$dir/_$name" 2>/dev/null || rm -f "$dir/_$name"; }
+  gen gh gh completion -s zsh
+  gen jj jj util completion zsh
+  gen just just --completions zsh
+  gen rg rg --generate complete-zsh
+  gen fd fd --gen-completions zsh
+  gen bat bat --completion zsh
+  gen delta delta --generate-completion zsh
+  gen starship starship completions zsh
+  gen atuin atuin gen-completions --shell zsh
+  gen mise mise completion zsh
+  gen chezmoi chezmoi completion zsh
+  gen uv uv generate-shell-completion zsh
+  gen yq yq shell-completion zsh
+  rm -f "$HOME/.zcompdump"   # rebuild the completion cache next shell
+}
+
+update() {
+  step "Pulling $repo"
+  if git -C "$repo" diff --quiet && git -C "$repo" diff --cached --quiet; then
+    git -C "$repo" pull --rebase --quiet && git -C "$repo" log -1 --format="${dim}now at %h %s (%cr)${reset}"
+  else
+    warn "repo has uncommitted changes; skipping pull (commit or stash, then rerun)"
+  fi
+  packages
+  step "Applying config"
+  chezmoi init --source "$repo"   # regenerate chezmoi's config; saved answers are reused
+  chezmoi apply
+  plugins
+}
+
+case "${1:-help}" in
+  update | up) update ;;
+  apply) shift; chezmoi apply "$@" ;;
+  diff) shift; chezmoi diff "$@" ;;
+  edit)
+    shift
+    if [ $# -gt 0 ]; then
+      chezmoi edit --apply "$@"
+    else
+      editor=${VISUAL:-${EDITOR:-vi}}
+      exec ${editor% --wait} "$repo"   # a folder: don't block the shell
+    fi ;;
+  doctor) shift; exec dev-doctor "$@" ;;
+  packages | pkgs) packages ;;
+  plugins) plugins ;;
+  completions) completions ;;
+  status | st)
+    git -C "$repo" status --short --branch
+    drift=$(chezmoi status 2>/dev/null || true)
+    if [ -n "$drift" ]; then
+      printf '\n%slocal drift%s (target differs from repo; `dot diff` shows how):\n%s\n' "$yellow" "$reset" "$drift"
+    fi ;;
+  cd) echo "dot cd is a zsh function; in other shells: cd \"$repo\"" >&2; exit 1 ;;
+  help | -h | --help) usage ;;
+  *) usage >&2; exit 2 ;;
+esac

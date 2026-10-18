@@ -1,22 +1,89 @@
 #!/usr/bin/env bash
+# dev-doctor (also `dot doctor`): is this machine fully set up? Exits non-zero if not.
 set -u
-export PATH="$HOME/.local/share/mise/shims:$HOME/.local/bin:$PATH"
+export PATH="$HOME/.local/share/mise/shims:$HOME/.local/bin:/opt/homebrew/bin:$PATH"
 
+green=$'\e[32m' red=$'\e[31m' yellow=$'\e[33m' dim=$'\e[2m' bold=$'\e[1m' reset=$'\e[0m'
+[ -t 1 ] || green='' red='' yellow='' dim='' bold='' reset=''
 fail=0
-check() {
-  if command -v "$1" >/dev/null 2>&1; then printf 'ok   %-12s %s\n' "$1" "$(command -v "$1")"
-  else printf 'MISS %-12s\n' "$1"; fail=1; fi
-}
+ok()   { printf '  %s✓%s %-16s %s%s%s\n' "$green" "$reset" "$1" "$dim" "${2:-}" "$reset"; }
+bad()  { printf '  %s✗%s %-16s %s\n' "$red" "$reset" "$1" "${2:-}"; fail=1; }
+meh()  { printf '  %s!%s %-16s %s\n' "$yellow" "$reset" "$1" "${2:-}"; }
+section() { printf '\n%s%s%s\n' "$bold" "$1" "$reset"; }
+tool() { if command -v "$1" >/dev/null 2>&1; then ok "$1" "$(command -v "$1")"; else bad "$1" "not installed (dot packages)"; fi; }
 
-echo "host: $(hostname) ($(uname -s) $(uname -m))"
-for tool in zsh git chezmoi rg fd fzf bat eza zoxide atuin delta lazygit starship tmux gh mise direnv jq yq node; do check "$tool"; done
-[ -r "$HOME/.antidote/antidote.zsh" ] && echo 'ok   antidote' || { echo 'MISS antidote'; fail=1; }
-[ -d "$HOME/.tmux/plugins/tmux-resurrect" ] && echo 'ok   tmux plugins' || { echo 'MISS tmux plugins (prefix + I)'; fail=1; }
-for agent in codex claude; do check "$agent"; done
-[ -d "$HOME/code" ] || { echo "MISS ~/code"; fail=1; }
-git config --global user.email | grep -qx 'gabby@welson.net' || { echo 'MISS personal Git identity'; fail=1; }
-if [ "$(uname -s)" = Linux ]; then
-  check docker
-  docker info >/dev/null 2>&1 || { echo 'MISS usable Docker daemon'; fail=1; }
+os=$(uname -s)
+profile=$(chezmoi execute-template '{{ .profile }}' 2>/dev/null || echo "?")
+printf '%s%s%s  %s %s, %s profile\n' "$bold" "$(hostname -s 2>/dev/null || hostname)" "$reset" "$os" "$(uname -m)" "$profile"
+
+section "Toolbox"
+for t in zsh git chezmoi starship atuin zoxide fzf eza bat fd rg delta lazygit yazi glow \
+         tmux gh mise direnv jq yq uv jj difft btop; do
+  tool "$t"
+done
+
+section "Shell"
+[ -r "$HOME/.antidote/antidote.zsh" ] && ok antidote "zsh plugins" || bad antidote "missing (chezmoi apply)"
+[ -d "$HOME/.tmux/plugins/tmux-resurrect" ] && ok "tmux plugins" || bad "tmux plugins" "missing (dot plugins, or prefix + I)"
+user=$(id -un)
+login_shell=$( { getent passwd "$user" 2>/dev/null || dscl . -read "/Users/$user" UserShell 2>/dev/null; } | awk -F'[: ]' '{print $NF}')
+case "$login_shell" in
+  */zsh) ok "login shell" "$login_shell" ;;
+  *) bad "login shell" "${login_shell:-unknown}; run: chsh -s \"$(command -v zsh)\"" ;;
+esac
+if command -v zsh >/dev/null 2>&1; then
+  zsh -i -c exit </dev/null >/dev/null 2>&1   # warm-up: rebuilds caches after `dot plugins`
+  ms=$(zsh -c 'zmodload zsh/datetime; s=$EPOCHREALTIME; zsh -i -c exit </dev/null >/dev/null 2>&1; printf "%.0f" $(( (EPOCHREALTIME - s) * 1000 ))')
+  ms=${ms:-999}
+  if [ "$ms" -lt 150 ]; then ok "zsh startup" "${ms}ms"; else meh "zsh startup" "${ms}ms (slow? try: zsh -xi -c exit)"; fi
 fi
+
+section "Identity"
+email=$(git config --global user.email || true)
+[ -n "$email" ] && ok "git email" "$email" || bad "git email" "unset (chezmoi init --prompt)"
+
+if [ "$os" = Darwin ]; then
+  section "Terminal"
+  ghostty=/Applications/Ghostty.app/Contents/MacOS/ghostty
+  if [ -x "$ghostty" ]; then
+    if errors=$("$ghostty" +validate-config 2>&1); then ok "ghostty config" "valid"
+    else bad "ghostty config" "$(printf '%s' "$errors" | head -3)"; fi
+  else
+    bad ghostty "not installed (dot packages)"
+  fi
+  if ls "$HOME/Library/Fonts" /Library/Fonts 2>/dev/null | grep -qi 'JetBrainsMonoNerdFont'; then
+    ok "nerd font" "JetBrainsMono Nerd Font"
+  else
+    bad "nerd font" "JetBrainsMono Nerd Font missing (dot packages)"
+  fi
+  if ls "$HOME/Library/Fonts" /Library/Fonts 2>/dev/null | grep -qi 'BerkeleyMono'; then
+    ok "berkeley mono" "preferred font installed"
+  else
+    meh "berkeley mono" "not installed; Ghostty falls back to JetBrains Mono"
+  fi
+else
+  section "Server"
+  if command -v docker >/dev/null 2>&1; then
+    docker info >/dev/null 2>&1 && ok docker "daemon reachable" || meh docker "installed, but the daemon isn't reachable"
+  else
+    meh docker "not installed"
+  fi
+fi
+
+section "Dotfiles"
+drift=$(chezmoi status 2>/dev/null || true)
+if [ -z "$drift" ]; then
+  ok "chezmoi" "home matches the repo"
+else
+  meh "chezmoi" "local drift in $(printf '%s\n' "$drift" | awk '{print $2}' | paste -sd, -) (dot diff)"
+fi
+repo=$(dirname "$(chezmoi source-path 2>/dev/null || echo "$HOME/dotfiles/home")")
+if [ -n "$(git -C "$repo" status --porcelain 2>/dev/null)" ]; then
+  meh "repo" "uncommitted changes in ${repo/#$HOME/\~}"
+else
+  ok "repo" "${repo/#$HOME/\~} is clean"
+fi
+
+echo
+[ "$fail" = 0 ] && printf '%sAll good.%s\n' "$green" "$reset" || printf '%sSome checks failed; see above.%s\n' "$red" "$reset"
 exit "$fail"
