@@ -8,7 +8,7 @@ typeset -U path PATH   # no duplicates; prepending an entry moves it to the fron
 
 # User-level tool bins, when present. Later entries end up first.
 # mise shims make mise-installed tools work without `mise activate`.
-for dir in ~/go/bin ~/.cargo/bin ~/.bun/bin ~/.grok/bin ~/.opencode/bin \
+for dir in ~/go/bin ~/.cargo/bin ~/.bun/bin ~/.grok/bin ~/.opencode/bin ~/.t3/bin \
            ~/.local/share/mise/shims ~/.local/bin; do
   [[ -d $dir ]] && path=($dir $path)
 done

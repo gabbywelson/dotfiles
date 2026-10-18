@@ -30,6 +30,7 @@ The full list: `ghostty +list-keybinds --default`.
 | <kbd>→</kbd> or <kbd>End</kbd> | Accept the grey autosuggestion; <kbd>Alt</kbd>+<kbd>→</kbd> accepts one word |
 | <kbd>↑</kbd> / <kbd>↓</kbd> | History, filtered to commands starting with what you've typed |
 | <kbd>Ctrl</kbd>+<kbd>R</kbd> | atuin: search all history. <kbd>Ctrl</kbd>+<kbd>R</kbd> again cycles global → host → session → directory → workspace; <kbd>Enter</kbd> runs, <kbd>Tab</kbd> edits first |
+| <kbd>?</kbd> on an empty line | atuin AI: describe what you want in plain English, get a command back (personal machines; needs `atuin login`) |
 | <kbd>Tab</kbd> | Fuzzy completion with previews (fzf-tab); <kbd>&lt;</kbd> <kbd>&gt;</kbd> switch groups |
 | `**`<kbd>Tab</kbd> | fzf for any argument: `vim **<Tab>`, `kill **<Tab>`, `ssh **<Tab>` |
 | <kbd>Ctrl</kbd>+<kbd>T</kbd> | Insert files picked with fzf (bat preview) |
@@ -46,7 +47,8 @@ The full list: `ghostty +list-keybinds --default`.
 
 | Command | What it does |
 | --- | --- |
-| `dot …` | Manage the dotfiles (`dot help`) |
+| `dot …` | Manage the dotfiles (`dot help`); `dot save` keeps settings changed in an app |
+| `t3 …` | T3 Code's command-line tool (installed by the app, on `PATH` here) |
 | `z part`, `zi` | Jump to a frequently used directory; `zi` picks interactively |
 | `y [dir]` | Browse files in yazi; quit with <kbd>q</kbd> to land in the last directory |
 | `rgf [query]` | Live ripgrep with previews; <kbd>Enter</kbd> opens the match in your editor |

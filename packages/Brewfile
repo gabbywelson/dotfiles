@@ -7,6 +7,7 @@ personal = ENV.fetch("HOMEBREW_DOTFILES_PROFILE", "personal") == "personal"
 
 # --- Terminal, shell & prompt ----------------------------------------------------
 cask "ghostty"                      # the terminal
+cask "t3-code@nightly"              # GUI for coding agents; settings live in ~/.t3/userdata
 cask "font-jetbrains-mono-nerd-font"
 brew "starship"                     # prompt
 brew "atuin"                        # searchable, synced shell history (Ctrl-R)

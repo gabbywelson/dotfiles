@@ -47,10 +47,13 @@ Everything goes through one command, `dot`:
 | `dot diff` / `dot apply` | Preview, then apply, config changes |
 | `dot doctor` | Check tools, fonts, Ghostty config, login shell, startup time and drift |
 | `dot status` | Uncommitted repo changes, plus files that drifted from the repo |
+| `dot save` | Copy settings you changed on this machine (say, in T3 Code's settings screen) back into the repo |
 | `dot cd` | Jump to the repo |
 
 Changed something in the repo? Commit and push it like any project; other machines
-pick it up with `dot update`.
+pick it up with `dot update`. Changed a setting inside an app instead? `dot save`
+copies it into the repo (and warns if anything that looks like a secret came along),
+then commit and push as usual.
 
 ## What you get
 
@@ -72,6 +75,9 @@ pick it up with `dot update`.
   Ghostty flips between Latte and Mocha, the prompt, fzf, eza, bat and yazi follow;
   delta and lazygit are told which flavor to use. (The details:
   [docs/how-it-works.md](docs/how-it-works.md#theming).)
+- **Agent tooling**: [T3 Code](https://t3.codes)'s settings, favorite models and key
+  bindings follow you to every Mac, and [atuin](https://atuin.sh)'s AI turns a `?` at
+  an empty prompt into "describe the command you want".
 - **Servers that feel like home**: the same shell, prompt and tools on Debian (fresh
   versions straight from upstream via [mise](https://mise.jdx.dev)), and SSH logins
   that reattach to a persistent tmux session.
@@ -88,7 +94,7 @@ The [cheat sheet](docs/cheatsheet.md) lists every key binding, alias and helper.
 | [ripgrep](https://github.com/BurntSushi/ripgrep) | `grep` | `rg TODO`, or `rgf` for a live, previewed search |
 | [zoxide](https://github.com/ajeetdsouza/zoxide) | `cd` | `z dotf` jumps to `~/dotfiles`; `zi` picks |
 | [fzf](https://github.com/junegunn/fzf) | — | <kbd>Ctrl</kbd>+<kbd>T</kbd> files, <kbd>Alt</kbd>+<kbd>C</kbd> dirs, <kbd>Tab</kbd> everywhere |
-| [atuin](https://atuin.sh) | shell history | <kbd>Ctrl</kbd>+<kbd>R</kbd>; `atuin login` to sync between machines |
+| [atuin](https://atuin.sh) | shell history | <kbd>Ctrl</kbd>+<kbd>R</kbd>; <kbd>?</kbd> at an empty prompt asks atuin AI; `atuin login` to sync |
 | [delta](https://github.com/dandavison/delta) | `git diff` pager | `git diff`, `git show` |
 | [difftastic](https://difftastic.wilfred.me.uk) | line-based diffs | `gdt`: diffs by syntax tree |
 | [lazygit](https://github.com/jesseduffield/lazygit) | git porcelain | `lg` |
@@ -113,6 +119,8 @@ The [cheat sheet](docs/cheatsheet.md) lists every key binding, alias and helper.
 | Packages | [Brewfile](packages/Brewfile) | Brewfile, minus personal apps | [apt basics](packages/debian.txt) + [mise toolbox](home/dot_config/mise/conf.d/dotfiles.toml) |
 | Git identity | personal | whatever email you enter | asked |
 | SSH | 1Password agent, homelab hosts | only `~/.ssh/config.d/*` | GitHub key |
+| Apps | Ghostty, T3 Code (with its settings) | Ghostty, T3 Code (with its settings) | — |
+| atuin AI | on | off (no work context sent to a third party; flip `[ai]` in the atuin config if allowed) | on |
 | Extras | Orrery vault helper | — | tmux on SSH login, Orrery sync timer (if the vault is cloned) |
 
 Some things belong to one machine only. These files are yours: they're never
@@ -146,6 +154,7 @@ dotfiles/
     │   └── …                  atuin, bat, git, jj, lazygit, tmux, yazi
     ├── dot_gitconfig.tmpl     → ~/.gitconfig
     ├── dot_tmux.conf          → ~/.tmux.conf
+    ├── dot_t3/userdata/       T3 Code settings, favorites, key bindings (macOS)
     └── dot_local/bin/         dot, dev-doctor, dev-session, orrery
 ```
 

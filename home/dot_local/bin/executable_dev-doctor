@@ -77,7 +77,7 @@ drift=$(chezmoi status 2>/dev/null || true)
 if [ -z "$drift" ]; then
   ok "chezmoi" "home matches the repo"
 else
-  meh "chezmoi" "local drift in $(printf '%s\n' "$drift" | awk '{print $2}' | paste -sd, -) (dot diff)"
+  meh "chezmoi" "local drift in $(printf '%s\n' "$drift" | awk '{print $2}' | paste -sd, -) (dot diff; dot save keeps it)"
 fi
 repo=$(dirname "$(chezmoi source-path 2>/dev/null || echo "$HOME/dotfiles/home")")
 if [ -n "$(git -C "$repo" status --porcelain 2>/dev/null)" ]; then

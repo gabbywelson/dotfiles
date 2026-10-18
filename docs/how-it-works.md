@@ -8,6 +8,7 @@ dark mode, and recipes for common changes.
 - [What happens when you open a terminal](#what-happens-when-you-open-a-terminal)
 - [Theming](#theming)
 - [Linux servers](#linux-servers)
+- [Settings that apps write: T3 Code, atuin](#settings-that-apps-write-t3-code-atuin)
 - [Recipes](#recipes)
 - [Troubleshooting](#troubleshooting)
 
@@ -43,7 +44,7 @@ chezmoi cat --override-data '{"profile":"work"}' ~/.ssh/config    # as a work ma
 | File | Purpose |
 | --- | --- |
 | `.chezmoi.toml.tmpl` | The questions `chezmoi init` asks; generates `~/.config/chezmoi/chezmoi.toml` |
-| `.chezmoiignore` | Targets to skip per OS or profile (no Ghostty config on servers, no Linux toolbox on Macs) |
+| `.chezmoiignore` | Targets to skip per OS or profile (no Ghostty or T3 Code settings on servers, no Linux toolbox on Macs) |
 | `.chezmoiexternal.toml` | Things downloaded on apply: antidote, tpm and the Catppuccin themes for bat, delta, lazygit, btop and yazi |
 | `.chezmoiremove` | Old targets to delete (files this repo used to manage) |
 | `.chezmoiscripts/` | Scripts run on apply: rebuild bat's theme cache, set up the Orrery sync timer |
@@ -133,6 +134,35 @@ On Linux there's no macOS appearance to read, so `catppuccin-flavor` says `mocha
   connect (`ssh-terminfo`), so colors and keys work without fiddling.
 - **Bash fallback**: `~/.bashrc` and `~/.config/bash/` keep bash pleasant for the times
   something drops you into it.
+
+## Settings that apps write: T3 Code, atuin
+
+Most files here are only ever edited in the repo. A few belong to apps that rewrite
+them when you change a setting in their UI:
+
+| App | Files in the repo | Not in the repo (and why) |
+| --- | --- | --- |
+| [T3 Code](https://t3.codes) | `~/.t3/userdata/settings.json` (providers, favorite and default models, worktree cleanup), `client-settings.json` (fonts, notifications, diff and sidebar preferences), `keybindings.json` (+ its `keybindings-migrations` marker) | `clerk-tokens.json` and `secrets/` (sign-in), `connection-catalog.json` (encrypted remote connections), `desktop-settings.json` (window position), `state*.sqlite`, `logs/`, `usage-*` caches, `worktrees/`; Electron's own data in `~/Library/Application Support/t3code*` |
+| [atuin](https://atuin.sh) | `~/.config/atuin/config.toml` (a template) | `~/.local/share/atuin`: history, your sync login, the encryption key |
+
+After changing something in T3 Code, `dot status` lists the file as drift. Then:
+
+```sh
+dot save                         # copy changes made on this machine into the repo
+git -C ~/dotfiles diff           # review
+git -C ~/dotfiles commit -am "t3: …" && git -C ~/dotfiles push
+```
+
+`dot save` only copies files changed on this machine (never repo changes you haven't
+applied yet) and flags anything that looks like a password or token, because the repo
+is public. If you run `dot update` with unsaved local changes, it tells you first, and
+chezmoi asks before overwriting each file.
+
+The atuin config is a template, so `dot save` skips it: change it with
+`dot edit ~/.config/atuin/config.toml`. It turns on what `atuin setup` enables (the
+background daemon, daemon-backed search, and atuin AI on `?`). AI is on for the
+personal profile and off for work, so no work context reaches a third-party service
+unless you decide it's allowed.
 
 ## Recipes
 

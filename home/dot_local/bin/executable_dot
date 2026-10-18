@@ -36,6 +36,7 @@ ${bold}dot${reset}: manage the dotfiles in ${repo/#$HOME/$tilde}
   ${bold}dot packages${reset}    install/upgrade packages only (Homebrew, or apt + mise)
   ${bold}dot plugins${reset}     update zsh/tmux plugins, themes, caches and completions
   ${bold}dot status${reset}      uncommitted repo changes and local drift
+  ${bold}dot save${reset} [FILE] copy settings you changed locally (T3 Code's UI, by hand) back into the repo
   ${bold}dot cd${reset}          cd into the repo (zsh function)
 EOF
 }
@@ -44,12 +45,15 @@ packages() {
   step "Packages ($(profile) profile)"
   if [ "$os" = Darwin ]; then
     have brew || { warn "Homebrew is missing; run scripts/bootstrap-darwin.sh"; return 1; }
-    # Ghostty installed from ghostty.org (it updates itself): don't make brew fight it.
-    local skip=${HOMEBREW_BUNDLE_CASK_SKIP:-}
-    if [ -d /Applications/Ghostty.app ] && ! brew list --cask ghostty >/dev/null 2>&1; then
-      skip="$skip ghostty"
-      note "Ghostty wasn't installed by Homebrew; skipping it (to hand it over: brew install --cask --adopt ghostty)"
-    fi
+    # Apps installed from their websites update themselves: don't make brew fight them.
+    local skip=${HOMEBREW_BUNDLE_CASK_SKIP:-} pair cask app
+    for pair in "ghostty:Ghostty.app" "t3-code@nightly:T3 Code (Nightly).app"; do
+      cask=${pair%%:*} app=${pair#*:}
+      if [ -d "/Applications/$app" ] && ! brew list --cask "$cask" >/dev/null 2>&1; then
+        skip="$skip $cask"
+        note "$app wasn't installed by Homebrew; skipping it (to hand it over: brew install --cask --adopt $cask)"
+      fi
+    done
     HOMEBREW_BUNDLE_CASK_SKIP="${skip# }" HOMEBREW_DOTFILES_PROFILE=$(profile) \
       brew bundle --file="$repo/packages/Brewfile" || warn "brew bundle reported problems (see above)"
   else
@@ -125,7 +129,39 @@ completions() {
   rm -f "$HOME/.zcompdump"   # rebuild the completion cache next shell
 }
 
+# Targets changed on this machine since chezmoi last wrote them (e.g. by an app's UI).
+locally_changed() {
+  chezmoi status 2>/dev/null | awk 'substr($0, 1, 1) == "M" { print substr($0, 4) }'
+}
+
+save() {
+  step "Copying local changes into the repo"
+  if [ $# -eq 0 ]; then
+    # Only files changed *here*. A bare `chezmoi re-add` would also copy back every
+    # file the repo changed but you haven't applied yet, undoing those changes.
+    local path
+    while IFS= read -r path; do set -- "$@" "$HOME/$path"; done < <(locally_changed)
+    if [ $# -eq 0 ]; then
+      note "nothing changed locally"
+      return 0
+    fi
+  fi
+  chezmoi re-add "$@"   # templates (*.tmpl) are skipped: edit those with `dot edit`
+  # The repo is public: catch tokens an app may have written into its settings.
+  if git -C "$repo" diff -U0 -- home | grep -iE '^\+.*(password|secret|token|api_?key)[a-z_]*"?[[:space:]]*[:=][[:space:]]*"[^"]+"'; then
+    warn "the lines above look like secrets; remove them before committing"
+  fi
+  git -C "$repo" status --short -- home
+  note "review with \`git -C ${repo/#$HOME/$tilde} diff\`, then commit and push"
+}
+
 update() {
+  local changed
+  changed=$(locally_changed | paste -sd, - | sed 's/,/, /g')
+  if [ -n "$changed" ]; then
+    warn "changed on this machine since the last apply: $changed"
+    note "to keep those changes, stop here (Ctrl-C) and run \`dot save\`; otherwise chezmoi asks before overwriting each"
+  fi
   step "Pulling $repo"
   if git -C "$repo" diff --quiet && git -C "$repo" diff --cached --quiet; then
     git -C "$repo" pull --rebase --quiet && git -C "$repo" log -1 --format="${dim}now at %h %s (%cr)${reset}"
@@ -155,11 +191,12 @@ case "${1:-help}" in
   packages | pkgs) packages ;;
   plugins) plugins ;;
   completions) completions ;;
+  save) shift; save "$@" ;;
   status | st)
     git -C "$repo" status --short --branch
     drift=$(chezmoi status 2>/dev/null || true)
     if [ -n "$drift" ]; then
-      printf '\n%slocal drift%s (target differs from repo; `dot diff` shows how):\n%s\n' "$yellow" "$reset" "$drift"
+      printf '\n%slocal drift%s (`dot diff` shows how; `dot save` keeps the local version):\n%s\n' "$yellow" "$reset" "$drift"
     fi ;;
   cd) echo "dot cd is a zsh function; in other shells: cd \"$repo\"" >&2; exit 1 ;;
   help | -h | --help) usage ;;
