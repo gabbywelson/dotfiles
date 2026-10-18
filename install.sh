@@ -17,7 +17,8 @@ main() {
   local os
   os=$(uname -s)
 
-  say "Dotfiles → ${dir/#$HOME/\~}"
+  local tilde="~"
+  say "Dotfiles → ${dir/#$HOME/$tilde}"
 
   # 1. git, so we can clone.
   if [ "$os" = Darwin ]; then

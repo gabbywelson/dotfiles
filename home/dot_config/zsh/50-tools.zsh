@@ -10,8 +10,10 @@ _cached_eval() {
   local cache=${XDG_CACHE_HOME:-$HOME/.cache}/zsh/init-$1.zsh stamp="# ${bin:A} $*" first
   [[ -r $cache ]] && IFS= read -r first <$cache
   if [[ $first != "$stamp" ]]; then
+    # Write aside, then rename: tabs opening at the same time never see half a file.
     mkdir -p ${cache:h}
-    { print -r -- "$stamp"; "$@" } >|$cache 2>/dev/null || { rm -f $cache; return 1 }
+    { print -r -- "$stamp"; "$@" } >|$cache.$$ 2>/dev/null && mv -f $cache.$$ $cache \
+      || { rm -f $cache.$$; return 1 }
   fi
   source $cache
 }

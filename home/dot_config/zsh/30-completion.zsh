@@ -13,6 +13,7 @@ fpath=(
 autoload -Uz compinit
 if [[ -n ~/.zcompdump(#qN.mh+24) || ! -e ~/.zcompdump ]]; then
   compinit
+  touch ~/.zcompdump   # compinit leaves an unchanged dump's timestamp alone
 else
   compinit -C
 fi

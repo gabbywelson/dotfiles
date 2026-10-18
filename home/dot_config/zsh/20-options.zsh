@@ -30,7 +30,9 @@ bindkey '^[[B' down-line-or-beginning-search '^[OB' down-line-or-beginning-searc
 # Word jumps: Alt/Ctrl + Left/Right (Ghostty sends Alt for the left Option key).
 bindkey '^[[1;3D' backward-word '^[[1;3C' forward-word
 bindkey '^[[1;5D' backward-word '^[[1;5C' forward-word
-bindkey '^[[3~' delete-char   # Fn-Delete
+bindkey '^[[H' beginning-of-line '^[OH' beginning-of-line   # Home
+bindkey '^[[F' end-of-line '^[OF' end-of-line               # End (also accepts a suggestion)
+bindkey '^[[3~' delete-char                                 # Fn-Delete
 
 # Ctrl-X Ctrl-E: edit the current command line in $EDITOR.
 autoload -Uz edit-command-line

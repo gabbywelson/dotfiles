@@ -1,4 +1,4 @@
-# Environment for interactive shells.
+# Environment for interactive shells. (The $TERM fallback lives in 00-ssh-tmux.zsh.)
 
 # --- Editor & pager ----------------------------------------------------------
 if (( $+commands[cursor] )); then
@@ -13,12 +13,6 @@ export VISUAL=$EDITOR PAGER=less LESS="-R -F -i"
 # Colorful man pages, rendered by bat.
 if (( $+commands[bat] )); then
   export MANPAGER="sh -c 'col -bx | bat -l man -p'" MANROFFOPT="-c"
-fi
-
-# --- Terminal ----------------------------------------------------------------
-# Over SSH, an unknown $TERM (no terminfo on this host) breaks tmux, vim and less.
-if [[ -n $SSH_CONNECTION && $TERM != dumb ]] && (( $+commands[infocmp] )) && ! infocmp $TERM &>/dev/null; then
-  export TERM=xterm-256color
 fi
 
 # --- Catppuccin flavor ---------------------------------------------------------

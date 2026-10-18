@@ -11,6 +11,7 @@ if [ -z "$repo" ]; then
   repo=$(dirname "$src")
 fi
 os=$(uname -s)
+tilde="~"   # for ${path/#$HOME/$tilde}; bash 3.2 mishandles a literal \~ there
 
 bold=$'\e[1m' blue=$'\e[34m' green=$'\e[32m' yellow=$'\e[33m' dim=$'\e[2m' reset=$'\e[0m'
 [ -t 1 ] || bold='' blue='' green='' yellow='' dim='' reset=''
@@ -25,7 +26,7 @@ profile() {
 
 usage() {
   cat <<EOF
-${bold}dot${reset}: manage the dotfiles in ${repo/#$HOME/\~}
+${bold}dot${reset}: manage the dotfiles in ${repo/#$HOME/$tilde}
 
   ${bold}dot update${reset}      pull the repo, install/upgrade packages, apply config, update plugins
   ${bold}dot apply${reset}       apply config only (chezmoi apply)
@@ -86,6 +87,15 @@ plugins() {
   if [ -x "$HOME/.tmux/plugins/tpm/bin/install_plugins" ]; then
     "$HOME/.tmux/plugins/tpm/bin/install_plugins" >/dev/null 2>&1 || warn "tmux plugin install failed"
     "$HOME/.tmux/plugins/tpm/bin/update_plugins" all >/dev/null 2>&1 || true
+    # tpm can't move a plugin pinned with 'owner/repo#tag' to a new tag; do it here.
+    local spec dir
+    for spec in $(sed -n "s/^set -g @plugin '\([^']*#[^']*\)'.*/\1/p" "$HOME/.tmux.conf"); do
+      dir="$HOME/.tmux/plugins/$(basename "${spec%%#*}")"
+      [ -d "$dir/.git" ] || continue
+      git -C "$dir" fetch --quiet --tags --force 2>/dev/null &&
+        git -C "$dir" -c advice.detachedHead=false checkout --quiet "${spec#*#}" 2>/dev/null ||
+        warn "couldn't move tmux plugin ${spec%%#*} to ${spec#*#}"
+    done
   fi
   for b in bat batcat; do have "$b" && { "$b" cache --build >/dev/null; break; }; done
   have tldr && { tldr --update >/dev/null 2>&1 || true; }

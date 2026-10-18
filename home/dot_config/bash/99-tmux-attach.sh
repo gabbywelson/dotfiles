@@ -2,6 +2,7 @@ if [[ $- == *i* ]] \
    && [ -n "${SSH_TTY:-}" ] \
    && [ -z "${TMUX:-}" ] \
    && [ -z "${NOTMUX:-}" ] \
+   && [ -z "${LC_NOTMUX:-}" ] \
    && [ ! -e "$HOME/.notmux" ] \
    && [ "${TERM:-dumb}" != dumb ] \
    && [ "${TERM_PROGRAM:-}" != vscode ] \

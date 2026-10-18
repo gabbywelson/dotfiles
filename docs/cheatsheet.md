@@ -76,7 +76,7 @@ Type `alias` for all of them, or `which ll` for one.
 ## tmux
 
 The prefix is <kbd>Ctrl</kbd>+<kbd>A</kbd>. On Linux servers, SSH logins attach to the
-session `main` automatically (`NOTMUX=1 ssh host` to skip once, `touch ~/.notmux` for good).
+session `main` automatically (`LC_NOTMUX=1 ssh host` to skip once, `touch ~/.notmux` on the server for good).
 
 | Keys | Action |
 | --- | --- |
