@@ -1,140 +1,128 @@
-# ~/.gitconfig
-# Sensible Git defaults for modern development
+# ~/.gitconfig: managed by chezmoi (~/dotfiles/home/dot_gitconfig.tmpl).
+# Machine-local settings (work remotes, credential helpers, signing keys) belong
+# in ~/.gitconfig.local, which is included last so it wins.
 
 [user]
-    name = Gabby Welson
-    email = gabby@welson.net
+    name = {{ .name }}
+    email = {{ .email }}
 
 [init]
     defaultBranch = main
 
 [core]
-{{- if eq .chezmoi.os "darwin" }}
-    editor = cursor --wait
-{{- else }}
-    editor = vim
-{{- end }}
-    pager = delta
+    pager = delta                  # editor: $EDITOR (Cursor, else nvim, else vim)
     autocrlf = input
     ignorecase = {{ if eq .chezmoi.os "darwin" }}true{{ else }}false{{ end }}
     untrackedCache = true
-    fsmonitor = false
     excludesFile = ~/.config/git/ignore
 
+# --- Everyday defaults --------------------------------------------------------------
+
+[branch]
+    sort = -committerdate          # `git branch` lists recent branches first
+[tag]
+    sort = version:refname         # v1.10 after v1.9
+[column]
+    ui = auto
+[help]
+    autocorrect = prompt           # "did you mean...?" instead of an error
+[commit]
+    verbose = true                 # show the diff while writing the message
 [pull]
     rebase = true
-
 [push]
-    autoSetupRemote = true
+    autoSetupRemote = true         # first push of a new branch just works
     default = current
-
+    followTags = true
 [fetch]
     prune = true
     pruneTags = true
-
 [merge]
     conflictstyle = zdiff3
-
 [rebase]
     autoStash = true
     autoSquash = true
-
+    updateRefs = true              # stacked branches move together
 [diff]
-    colorMoved = default
     algorithm = histogram
-
+    colorMoved = default
+    mnemonicPrefix = true
+    renames = true
 [rerere]
     enabled = true
+    autoupdate = true
 
-# ============================================
-# Delta (Beautiful Diffs)
-# ============================================
+# --- Delta: syntax-highlighted diffs -----------------------------------------------
+# Colors come from Catppuccin's delta features (fetched by chezmoi). The shell sets
+# DELTA_FEATURES to catppuccin-latte or catppuccin-mocha to match the terminal.
+
+[include]
+    path = ~/.config/delta/catppuccin.gitconfig
 
 [interactive]
     diffFilter = delta --color-only
 
 [delta]
-    navigate = true
-    light = false
-    side-by-side = false
+    features = catppuccin-mocha
+    navigate = true                # n / N jump between files
     line-numbers = true
-    syntax-theme = Catppuccin Mocha
+    hyperlinks = true
+{{- if eq .chezmoi.os "darwin" }}
+    hyperlinks-file-link-format = "cursor://file/{path}:{line}"   # Cmd-click opens Cursor
+{{- end }}
 
-[delta "decorations"]
-    commit-decoration-style = bold yellow box ul
-    file-style = bold yellow ul
-    file-decoration-style = none
-    hunk-header-decoration-style = cyan box ul
+# --- Difftastic: diffs by syntax tree (`gdt` or `git dft`) --------------------------
 
-# ============================================
-# Aliases
-# ============================================
+[difftool]
+    prompt = false
+[difftool "difftastic"]
+    cmd = difft "$LOCAL" "$REMOTE"
+[pager]
+    difftool = true
+
+# --- Aliases -----------------------------------------------------------------------
 
 [alias]
-    # Status & Info
     st = status -sb
     last = log -1 HEAD --stat
     who = shortlog -sn --no-merges
-
-    # Branching
     co = switch
     cob = switch -c
     br = branch
     bra = branch -a
-
-    # Committing
     cm = commit -m
     ca = commit --amend
     can = commit --amend --no-edit
-
-    # Staging
     aa = add --all
     ap = add --patch
-
-    # Logging (pretty!)
-    lg = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit
+    lg = log --graph --pretty=format:'%C(red)%h%C(reset) -%C(yellow)%d%C(reset) %s %C(green)(%cr) %C(bold blue)<%an>%C(reset)' --abbrev-commit
     ll = log --oneline -20
     today = log --since=midnight --oneline --no-merges
-
-    # Diff
     df = diff
     dfs = diff --staged
-
-    # Stash
+    dft = difftool --tool=difftastic
     sl = stash list
     sp = stash pop
     ss = stash push -m
-
-    # Undo / Reset
     unstage = restore --staged
     discard = restore --worktree
-
-    # Show all aliases
-    aliases = config --get-regexp alias
-
-# ============================================
-# URL Shortcuts
-# ============================================
+    aliases = config --get-regexp ^alias\\.
 
 [url "git@github.com:"]
     insteadOf = gh:
-
 [url "git@gitlab.com:"]
     insteadOf = gl:
 
-# ============================================
-# Colors
-# ============================================
-
 [color]
     ui = auto
-
 [color "branch"]
     current = yellow reverse
     local = yellow
     remote = green
-
 [color "status"]
     added = green
     changed = yellow
     untracked = red
+
+[include]
+    path = ~/.gitconfig.local

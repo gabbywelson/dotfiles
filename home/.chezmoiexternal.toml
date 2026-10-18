@@ -1,6 +1,7 @@
-# Third-party pieces chezmoi fetches on apply (refreshed weekly/monthly).
+# Third-party pieces chezmoi downloads on `chezmoi apply`, refreshed weekly
+# (plugin managers) or monthly (themes). `dot update` forces a refresh.
 
-# zsh plugin manager; plugin list lives in ~/.zsh_plugins.txt
+# zsh plugin manager; the plugin list is ~/.config/zsh/plugins.txt
 [".antidote"]
     type = "git-repo"
     url = "https://github.com/mattmc3/antidote.git"
@@ -14,13 +15,44 @@
     refreshPeriod = "168h"
     clone.args = ["--depth", "1"]
 
-# Catppuccin Mocha themes (https://github.com/catppuccin)
+# --- Catppuccin (https://github.com/catppuccin): Latte for light mode, Mocha for dark ---
+
+[".config/bat/themes/Catppuccin Latte.tmTheme"]
+    type = "file"
+    url = "https://raw.githubusercontent.com/catppuccin/bat/main/themes/Catppuccin%20Latte.tmTheme"
+    refreshPeriod = "720h"
+
 [".config/bat/themes/Catppuccin Mocha.tmTheme"]
     type = "file"
     url = "https://raw.githubusercontent.com/catppuccin/bat/main/themes/Catppuccin%20Mocha.tmTheme"
     refreshPeriod = "720h"
 
+# delta features catppuccin-latte / catppuccin-mocha, included by ~/.gitconfig
+[".config/delta/catppuccin.gitconfig"]
+    type = "file"
+    url = "https://raw.githubusercontent.com/catppuccin/delta/main/catppuccin.gitconfig"
+    refreshPeriod = "720h"
+
+# lazygit color layers, picked per launch by the `lazygit` shell function
+[".config/lazygit/themes/latte.yml"]
+    type = "file"
+    url = "https://raw.githubusercontent.com/catppuccin/lazygit/main/themes-mergable/latte/blue.yml"
+    refreshPeriod = "720h"
+
+[".config/lazygit/themes/mocha.yml"]
+    type = "file"
+    url = "https://raw.githubusercontent.com/catppuccin/lazygit/main/themes-mergable/mocha/blue.yml"
+    refreshPeriod = "720h"
+
 [".config/btop/themes/catppuccin_mocha.theme"]
     type = "file"
     url = "https://raw.githubusercontent.com/catppuccin/btop/main/themes/catppuccin_mocha.theme"
+    refreshPeriod = "720h"
+
+# yazi flavors (selected in ~/.config/yazi/theme.toml)
+[".config/yazi/flavors"]
+    type = "archive"
+    url = "https://github.com/yazi-rs/flavors/archive/refs/heads/main.tar.gz"
+    stripComponents = 1
+    include = ["*/catppuccin-latte.yazi", "*/catppuccin-latte.yazi/**", "*/catppuccin-mocha.yazi", "*/catppuccin-mocha.yazi/**"]
     refreshPeriod = "720h"

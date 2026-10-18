@@ -1,97 +1,73 @@
-# ~/.config/ghostty/config
-# macOS Ghostty configuration managed by chezmoi
-#
-# Docs: https://ghostty.org/docs/config
+# Ghostty: https://ghostty.org/docs/config
+# Managed by chezmoi: edit ~/dotfiles/home/dot_config/ghostty/config, then `chezmoi apply`
+# (Cmd-Shift-, reloads). Every option, documented: `ghostty +show-config --default --docs`.
+# Check for typos without restarting: `ghostty +validate-config` (run by `dot doctor`).
 
-# ============================================
-# Font
-# ============================================
-
-# Primary font (Nerd Font for icons)
-font-family = MesloLGS Nerd Font
-font-size = 14
-
-# Catppuccin everywhere: Latte in light mode, Mocha in dark (follows macOS).
-# Ghostty 1.2+ theme names are title case; list them with `ghostty +list-themes`.
+# --- Theme ---------------------------------------------------------------------
+# Catppuccin that follows macOS appearance: Latte by day, Mocha by night.
+# The prompt, fzf, eza, bat and friends pick up the switch automatically.
+# Theme names are case-sensitive (Ghostty 1.2+): browse them with `ghostty +list-themes`.
 theme = light:Catppuccin Latte,dark:Catppuccin Mocha
 
-# ============================================
-# Window
-# ============================================
+# --- Font ----------------------------------------------------------------------
+# The first installed family wins. Berkeley Mono is commercial (berkeleygraphics.com);
+# JetBrains Mono Nerd Font comes from the Brewfile. Icons work with any font,
+# because Ghostty bundles the Nerd Font symbols.
+font-family = "Berkeley Mono"
+font-family = "JetBrainsMono Nerd Font"
+font-size = 14
 
-# Comfortable padding
-window-padding-x = 12
+# --- Window --------------------------------------------------------------------
+window-padding-x = 14
 window-padding-y = 10
 window-padding-balance = true
-
-# Initial size (columns x rows)
+# Let full-screen apps (lazygit, btop, yazi) paint into the padding, edge to edge.
+window-padding-color = extend
 window-width = 120
-window-height = 35
-
-# Remember window position/size
+window-height = 34
 window-save-state = always
 
-# Title
-window-title-font-family = MesloLGS Nerd Font
-
-# ============================================
-# Appearance
-# ============================================
-
-# Slight transparency for aesthetic (1.0 = fully opaque)
 background-opacity = 0.96
-
-# Blur background when transparent (macOS)
-background-blur-radius = 20
-
-# Cursor
-cursor-style = bar
-cursor-style-blink = true
-
-# Keep background panes readable while making the focused split obvious
+background-blur = 20
 unfocused-split-opacity = 0.85
 
-# ============================================
-# Behavior
-# ============================================
-
-# Clipboard
-clipboard-read = allow
-clipboard-write = allow
-copy-on-select = true
-
-# Mouse
+cursor-style = bar
+cursor-style-blink = true
 mouse-hide-while-typing = true
 
-# Shell integration
-shell-integration = zsh
+# --- Clipboard -----------------------------------------------------------------
+copy-on-select = true
+# Programs (also over SSH, e.g. tmux) may copy to the clipboard; reading it asks first.
+clipboard-write = allow
+clipboard-read = ask
+
+# --- Shell integration -----------------------------------------------------------
+# Prompt marks (Cmd-Up/Down jumps between prompts, click to move the cursor),
+# a bar cursor at the prompt, titles, and SSH niceties: Ghostty installs its
+# terminfo on remote hosts the first time you ssh to them.
 shell-integration-features = cursor,sudo,title,ssh-env,ssh-terminfo,path
 
-# Use left Option for terminal shortcuts while preserving right Option for
-# macOS Unicode characters.
+# Finished a command that ran 10s+ while you were in another app? Get a notification.
+notify-on-command-finish = unfocused
+notify-on-command-finish-action = no-bell,notify
+notify-on-command-finish-after = 10s
+
+# --- Keyboard ---------------------------------------------------------------------
+# Left Option acts as Alt (word jumps, Alt-C for fzf); right Option still types é, ü, …
 macos-option-as-alt = left
 
-# Confirm before closing with running processes
-confirm-close-surface = true
+# Ghostty's defaults are good: `ghostty +list-keybinds --default` lists them.
+# Highlights: Cmd-D / Cmd-Shift-D split, Cmd-Shift-Enter zooms a split,
+# Cmd-F searches scrollback, Cmd-Shift-P opens the command palette.
 
-# ============================================
-# Performance
-# ============================================
-
-# VSync for smooth rendering
-window-vsync = true
-
-# ============================================
-# Keybindings
-# ============================================
-
-# Ghostty has great defaults, minimal customization needed
-# See: ghostty +show-keys for current bindings
-
-# Drop-down terminal from anywhere (requires macOS Accessibility permission)
+# Drop-down terminal from anywhere with Ctrl-` (needs Accessibility permission).
 keybind = global:ctrl+grave_accent=toggle_quick_terminal
 quick-terminal-position = top
 quick-terminal-size = 40%
 quick-terminal-screen = mouse
 quick-terminal-autohide = true
 quick-terminal-space-behavior = move
+
+# --- Machine-local overrides ------------------------------------------------------
+# Unmanaged, optional: font size for a big monitor, a different font, etc.
+config-file = ?config.local

@@ -1,19 +1,16 @@
-# Catppuccin Mocha (https://github.com/catppuccin/lazygit), delta for diffs.
+# lazygit: https://github.com/jesseduffield/lazygit/blob/master/docs/Config.md
+# Colors are not set here: the `lazygit` shell function (~/.config/zsh/80-functions.zsh)
+# layers themes/latte.yml or themes/mocha.yml on top via LG_CONFIG_FILE, matching
+# whatever Ghostty is showing. Those theme files are fetched by chezmoi.
 gui:
   nerdFontsVersion: "3"
-  theme:
-    activeBorderColor: ["#89b4fa", bold]
-    inactiveBorderColor: ["#a6adc8"]
-    optionsTextColor: ["#89b4fa"]
-    selectedLineBgColor: ["#313244"]
-    cherryPickedCommitBgColor: ["#45475a"]
-    cherryPickedCommitFgColor: ["#89b4fa"]
-    unstagedChangesColor: ["#f38ba8"]
-    defaultFgColor: ["#cdd6f4"]
-    searchingActiveBorderColor: ["#f9e2af"]
-  authorColors:
-    "*": "#b4befe"
+  showRandomTip: false
+  showNumstatInFilesView: true
+  showDivergenceFromBaseBranch: arrowAndNumber
 git:
-  paging:
-    colorArg: always
-    pager: delta --dark --paging=never
+  # `|` cycles renderers: delta (line diff), then difftastic (syntax-aware diff).
+  diffRenderers:
+    - colorArg: always
+      command: delta --paging=never
+    - command: difft --color=always
+      type: extDiff

@@ -1,0 +1,6 @@
+# yazi (`y` in the shell): https://yazi-rs.github.io/docs/configuration/theme
+# yazi asks the terminal for its background and picks the matching flavor.
+# The Catppuccin flavors are fetched into ~/.config/yazi/flavors by chezmoi.
+[flavor]
+dark = "catppuccin-mocha"
+light = "catppuccin-latte"
