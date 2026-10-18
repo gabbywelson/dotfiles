@@ -31,7 +31,7 @@ home directory (the *target*). The repo root has a `.chezmoiroot` file pointing 
 
 **Templates** see the OS (`.chezmoi.os`), hostname and the answers from
 `chezmoi init`: `.profile` (`personal` or `work`), `.name` and `.email`. For example
-`dot_gitconfig.tmpl` fills in your git identity and `private_dot_ssh/config.tmpl` only
+`dot_gitconfig.tmpl` fills in your git identity and `private_dot_ssh/private_config.tmpl` only
 adds homelab hosts on personal Macs. Test a template without applying it:
 
 ```sh

@@ -10,6 +10,7 @@
 
 [tools]
 node = "lts"
+bun = "latest"
 "npm:@openai/codex" = "latest"
 
 starship = "latest"

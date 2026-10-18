@@ -65,6 +65,7 @@ if [ "$os" = Darwin ]; then
   fi
 else
   section "Server"
+  for t in bun psql sqlite3; do tool "$t"; done
   if command -v docker >/dev/null 2>&1; then
     docker info >/dev/null 2>&1 && ok docker "daemon reachable" || meh docker "installed, but the daemon isn't reachable"
   else

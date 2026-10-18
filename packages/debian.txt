@@ -14,7 +14,9 @@ git
 jq
 less
 locales
+postgresql-client
 ripgrep
+sqlite3
 tealdeer
 time
 tmux
@@ -22,4 +24,5 @@ tokei
 tree
 unzip
 vim
+wget
 zsh
