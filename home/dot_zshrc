@@ -1,7 +1,7 @@
 # ~/.zshrc: interactive zsh. Managed by chezmoi (~/dotfiles/home/dot_zshrc).
 #
 # The real config lives in small numbered modules, loaded in order:
-#   ~/.config/zsh/00-ssh-tmux.zsh   Linux over SSH: attach to tmux session "main"
+#   ~/.config/zsh/00-ssh-term.zsh   over SSH: $TERM fallback for hosts without its terminfo
 #   ~/.config/zsh/10-env.zsh        editor, pager, Catppuccin flavor, TERM fallback
 #   ~/.config/zsh/20-options.zsh    history, shell options, key bindings
 #   ~/.config/zsh/30-completion.zsh compinit + completion styles

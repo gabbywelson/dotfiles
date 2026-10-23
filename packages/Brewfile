@@ -13,7 +13,6 @@ brew "starship"                     # prompt
 brew "atuin"                        # searchable, synced shell history (Ctrl-R)
 brew "zoxide"                       # `z proj` jumps to frecent dirs
 brew "fzf"                          # fuzzy finder behind Ctrl-T, Alt-C, Tab
-brew "tmux"
 brew "chezmoi"                      # applies this repo to $HOME
 brew "mise"                         # per-project runtimes (node, python, ...)
 brew "direnv"                       # per-project env vars

@@ -34,7 +34,7 @@ ${bold}dot${reset}: manage the dotfiles in ${repo/#$HOME/$tilde}
   ${bold}dot edit${reset} [FILE] edit a managed file (e.g. ~/.zshrc) and apply it; no FILE opens the repo
   ${bold}dot doctor${reset}      check tools, fonts, config validity and drift
   ${bold}dot packages${reset}    install/upgrade packages only (Homebrew, or apt + mise)
-  ${bold}dot plugins${reset}     update zsh/tmux plugins, themes, caches and completions
+  ${bold}dot plugins${reset}     update zsh plugins, themes, caches and completions
   ${bold}dot status${reset}      uncommitted repo changes and local drift
   ${bold}dot save${reset} [FILE] copy settings you changed locally (T3 Code's UI, by hand) back into the repo
   ${bold}dot cd${reset}          cd into the repo (zsh function)
@@ -87,19 +87,6 @@ plugins() {
     # Bundling clones any new plugins; then pull updates for all of them.
     zsh -c 'source ~/.antidote/antidote.zsh && antidote bundle <~/.config/zsh/plugins.txt >|"$1" && antidote update' \
       _ "$cache/plugins.zsh" >/dev/null 2>&1 || warn "antidote update failed"
-  fi
-  if [ -x "$HOME/.tmux/plugins/tpm/bin/install_plugins" ]; then
-    "$HOME/.tmux/plugins/tpm/bin/install_plugins" >/dev/null 2>&1 || warn "tmux plugin install failed"
-    "$HOME/.tmux/plugins/tpm/bin/update_plugins" all >/dev/null 2>&1 || true
-    # tpm can't move a plugin pinned with 'owner/repo#tag' to a new tag; do it here.
-    local spec dir
-    for spec in $(sed -n "s/^set -g @plugin '\([^']*#[^']*\)'.*/\1/p" "$HOME/.tmux.conf"); do
-      dir="$HOME/.tmux/plugins/$(basename "${spec%%#*}")"
-      [ -d "$dir/.git" ] || continue
-      git -C "$dir" fetch --quiet --tags --force 2>/dev/null &&
-        git -C "$dir" -c advice.detachedHead=false checkout --quiet "${spec#*#}" 2>/dev/null ||
-        warn "couldn't move tmux plugin ${spec%%#*} to ${spec#*#}"
-    done
   fi
   for b in bat batcat; do have "$b" && { "$b" cache --build >/dev/null; break; }; done
   have tldr && { tldr --update >/dev/null 2>&1 || true; }

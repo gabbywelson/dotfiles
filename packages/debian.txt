@@ -19,7 +19,6 @@ ripgrep
 sqlite3
 tealdeer
 time
-tmux
 tokei
 tree
 unzip

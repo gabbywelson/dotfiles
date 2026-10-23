@@ -7,7 +7,7 @@
 #
 # Colors are ANSI names (blue, green, purple = magenta, ...), never hex. Ghostty's Catppuccin theme
 # decides what "blue" looks like, so the prompt matches Latte by day and Mocha by
-# night, and stays correct over SSH and inside tmux. Pills are rounded caps
+# night, and stays correct over SSH. Pills are rounded caps
 # (\ue0b6 \ue0b4) around `inverted` text, which takes the terminal's background
 # color, so pill text has strong contrast in both flavors.
 #

@@ -1,4 +1,4 @@
-# Environment for interactive shells. (The $TERM fallback lives in 00-ssh-tmux.zsh.)
+# Environment for interactive shells. (The $TERM fallback lives in 00-ssh-term.zsh.)
 
 # --- Editor & pager ----------------------------------------------------------
 if (( $+commands[cursor] )); then

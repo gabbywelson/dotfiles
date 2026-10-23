@@ -19,13 +19,12 @@ printf '%s%s%s  %s %s, %s profile\n' "$bold" "$(hostname -s 2>/dev/null || hostn
 
 section "Toolbox"
 for t in zsh git chezmoi starship atuin zoxide fzf eza bat fd rg delta lazygit yazi glow \
-         tmux gh mise direnv jq yq uv jj difft btop; do
+         gh mise direnv jq yq uv jj difft btop; do
   tool "$t"
 done
 
 section "Shell"
 [ -r "$HOME/.antidote/antidote.zsh" ] && ok antidote "zsh plugins" || bad antidote "missing (chezmoi apply)"
-[ -d "$HOME/.tmux/plugins/tmux-resurrect" ] && ok "tmux plugins" || bad "tmux plugins" "missing (dot plugins, or prefix + I)"
 user=$(id -un)
 login_shell=$( { getent passwd "$user" 2>/dev/null || dscl . -read "/Users/$user" UserShell 2>/dev/null; } | awk -F'[: ]' '{print $NF}')
 case "$login_shell" in
@@ -33,9 +32,8 @@ case "$login_shell" in
   *) bad "login shell" "${login_shell:-unknown}; run: chsh -s \"$(command -v zsh)\"" ;;
 esac
 if command -v zsh >/dev/null 2>&1; then
-  # NOTMUX: over SSH, don't let the test shell exec into tmux.
-  NOTMUX=1 zsh -i -c exit </dev/null >/dev/null 2>&1   # warm-up: rebuilds caches after `dot plugins`
-  ms=$(NOTMUX=1 zsh -c 'zmodload zsh/datetime; s=$EPOCHREALTIME; zsh -i -c exit </dev/null >/dev/null 2>&1; printf "%.0f" $(( (EPOCHREALTIME - s) * 1000 ))')
+  zsh -i -c exit </dev/null >/dev/null 2>&1   # warm-up: rebuilds caches after `dot plugins`
+  ms=$(zsh -c 'zmodload zsh/datetime; s=$EPOCHREALTIME; zsh -i -c exit </dev/null >/dev/null 2>&1; printf "%.0f" $(( (EPOCHREALTIME - s) * 1000 ))')
   ms=${ms:-999}
   if [ "$ms" -lt 150 ]; then ok "zsh startup" "${ms}ms"; else meh "zsh startup" "${ms}ms (slow? try: zsh -xi -c exit)"; fi
 fi

@@ -69,7 +69,7 @@ login):
 
 | Module | Does |
 | --- | --- |
-| `00-ssh-tmux.zsh` | On Linux over SSH, `exec tmux new-session -A -s main` |
+| `00-ssh-term.zsh` | Over SSH, falls back to `TERM=xterm-256color` when the host lacks terminfo for `$TERM` |
 | `10-env.zsh` | `$EDITOR` (Cursor, else nvim, else vim), bat man pages, `catppuccin-flavor` |
 | `20-options.zsh` | History, shell options, key bindings |
 | `30-completion.zsh` | `compinit` (full rebuild at most daily) and completion styles |
@@ -114,7 +114,7 @@ which makes it the terminal's background color. That's dark text on a pastel pil
 Mocha and light text on a saturated pill in Latte, readable in both without separate
 palettes.
 
-tmux and btop paint their own Mocha backgrounds, which look deliberate in either mode.
+btop paints its own Mocha background, which look deliberate in either mode.
 On Linux there's no macOS appearance to read, so `catppuccin-flavor` says `mocha`; set
 `CATPPUCCIN_FLAVOR=latte` in the environment to override.
 
@@ -127,9 +127,6 @@ On Linux there's no macOS appearance to read, so `catppuccin-flavor` says `mocha
   `dot update` runs `mise upgrade`.
 - **Completions**: mise-installed tools don't ship zsh completions, so `dot plugins`
   generates them into `~/.local/share/zsh/site-functions`.
-- **tmux on login**: interactive SSH sessions attach to `main`, so a dropped
-  connection never kills a long job. scp, rsync, `ssh host cmd` and editor remotes
-  (VS Code, Cursor) are left alone.
 - **Ghostty over SSH**: Ghostty installs its terminfo on each host the first time you
   connect (`ssh-terminfo`), so colors and keys work without fiddling.
 - **Bash fallback**: `~/.bashrc` and `~/.config/bash/` keep bash pleasant for the times

@@ -37,7 +37,7 @@ mouse-hide-while-typing = true
 
 # --- Clipboard -----------------------------------------------------------------
 copy-on-select = true
-# Programs (also over SSH, e.g. tmux) may copy to the clipboard; reading it asks first.
+# Programs (also over SSH) may copy to the clipboard; reading it asks first.
 clipboard-write = allow
 clipboard-read = ask
 

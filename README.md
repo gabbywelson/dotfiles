@@ -34,7 +34,7 @@ again at any time.
 | Something feels off | `dot doctor` |
 
 After the first run, open **Ghostty**. On a server, log out and back in (zsh becomes
-your login shell, and SSH logins land in a tmux session).
+your login shell).
 
 ## Everyday use
 
@@ -79,8 +79,7 @@ then commit and push as usual.
   bindings follow you to every Mac, and [atuin](https://atuin.sh)'s AI turns a `?` at
   an empty prompt into "describe the command you want".
 - **Servers that feel like home**: the same shell, prompt and tools on Debian (fresh
-  versions straight from upstream via [mise](https://mise.jdx.dev)), and SSH logins
-  that reattach to a persistent tmux session.
+  versions straight from upstream via [mise](https://mise.jdx.dev)).
 
 The [cheat sheet](docs/cheatsheet.md) lists every key binding, alias and helper.
 
@@ -121,7 +120,7 @@ The [cheat sheet](docs/cheatsheet.md) lists every key binding, alias and helper.
 | SSH | 1Password agent, homelab hosts | only `~/.ssh/config.d/*` | GitHub key |
 | Apps | Ghostty, T3 Code (with its settings) | Ghostty, T3 Code (with its settings) | — |
 | atuin AI | on | off (no work context sent to a third party; flip `[ai]` in the atuin config if allowed) | on |
-| Extras | Orrery vault helper | — | tmux on SSH login, Orrery sync timer (if the vault is cloned) |
+| Extras | Orrery vault helper | — | Orrery sync timer (if the vault is cloned) |
 
 Some things belong to one machine only. These files are yours: they're never
 overwritten, and the managed config loads them last.
@@ -151,11 +150,10 @@ dotfiles/
     │   ├── ghostty/config     terminal
     │   ├── starship.toml      prompt
     │   ├── mise/conf.d/       Linux toolbox
-    │   └── …                  atuin, bat, git, jj, lazygit, tmux, yazi
+    │   └── …                  atuin, bat, git, jj, lazygit, yazi
     ├── dot_gitconfig.tmpl     → ~/.gitconfig
-    ├── dot_tmux.conf          → ~/.tmux.conf
     ├── dot_t3/userdata/       T3 Code settings, favorites, key bindings (macOS)
-    └── dot_local/bin/         dot, dev-doctor, dev-session, orrery
+    └── dot_local/bin/         dot, dev-doctor, orrery
 ```
 
 chezmoi's file names encode where files go: `dot_` becomes `.`, `.tmpl` files are

@@ -75,24 +75,6 @@ The full list: `ghostty +list-keybinds --default`.
 
 Type `alias` for all of them, or `which ll` for one.
 
-## tmux
-
-The prefix is <kbd>Ctrl</kbd>+<kbd>A</kbd>. On Linux servers, SSH logins attach to the
-session `main` automatically (`LC_NOTMUX=1 ssh host` to skip once, `touch ~/.notmux` on the server for good).
-
-| Keys | Action |
-| --- | --- |
-| prefix <kbd>\|</kbd> / prefix <kbd>-</kbd> | Split side by side / stacked |
-| prefix <kbd>c</kbd> | New window (same directory) |
-| <kbd>Alt</kbd>+arrows | Move between panes (no prefix) |
-| prefix <kbd>g</kbd> / <kbd>y</kbd> / <kbd>f</kbd> | Popup: lazygit / yazi / fuzzy session switcher |
-| prefix <kbd>[</kbd> | Scroll and copy: <kbd>v</kbd> selects, <kbd>y</kbd> copies to your Mac's clipboard (even over SSH) |
-| prefix <kbd>d</kbd> | Detach (everything keeps running) |
-| prefix <kbd>Ctrl</kbd>+<kbd>S</kbd> / <kbd>Ctrl</kbd>+<kbd>R</kbd> | Save / restore sessions (also saved every 15 minutes) |
-| prefix <kbd>r</kbd> | Reload `~/.tmux.conf` |
-| prefix <kbd>I</kbd> / prefix <kbd>U</kbd> | Install / update plugins |
-| <kbd>Ctrl</kbd>+<kbd>A</kbd> <kbd>Ctrl</kbd>+<kbd>A</kbd> | Send the prefix to a nested tmux (Mac tmux → SSH → server tmux) |
-
 ## lazygit (`lg`)
 
 <kbd>Space</kbd> stage · <kbd>a</kbd> stage all · <kbd>c</kbd> commit · <kbd>P</kbd> push ·

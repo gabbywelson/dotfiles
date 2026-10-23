@@ -5,6 +5,13 @@
 .zsh_plugins.txt
 .zsh_plugins.zsh
 
+# tmux, replaced by Rex: config, plugins, saved sessions, login auto-attach, dev-session.
+.tmux.conf
+.tmux
+.config/zsh/00-ssh-tmux.zsh
+.config/bash/99-tmux-attach.sh
+.local/bin/dev-session
+
 # Retired Orrery agent skills.
 .agents/skills/orrery-homelab
 .agents/skills/orrery-knowledge
